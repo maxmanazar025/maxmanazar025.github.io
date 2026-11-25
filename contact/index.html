@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | Maxmanazar Sultonov (MS)</title>
+  <meta name="description" content="Maxmanazar Sultonov bilan bog'lanish: xabar yuborish, Telegram, email va tez-tez so'raladigan savollar." />
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body data-page="contact">
+<main class="page">
+  <div class="container">
+    <header class="p-hero">
+      <span class="ghost" aria-hidden="true">CONTACT</span>
+      <span class="cross" style="left:22%;top:40px"></span><span class="cross" style="right:22%;top:130px"></span>
+      <p class="eyebrow c">To'g'ridan-to'g'ri aloqa va hamkorlik</p>
+      <h1 class="h-xl">Bog'la<span class="serif grad">ning</span></h1>
+      <p class="lead">Backend loyiha, stajirovka taklifi yoki API arxitekturasi bo'yicha savol bormi? Keling, birga ajoyib narsa quramiz.</p>
+    </header>
+
+    <div class="contact-grid">
+      <form class="card reveal" id="form" novalidate>
+        <span class="label"><span data-icon="send"></span> To'g'ridan-to'g'ri kanal</span>
+        <h2 class="t" style="font-size:1.6rem;margin:8px 0 6px">Xabar yuboring</h2>
+        <p class="dim">Taklif, arxitektura savoli yoki g'oya bormi? Formani to'ldiring — 24 soat ichida javob beraman.</p>
+        <fieldset class="topics" style="border:0"><legend class="muted" style="float:left;margin-right:8px">MAVZU:</legend>
+          <label><input type="radio" name="topic" value="Umumiy savol" checked /><span class="opt">Umumiy savol</span></label>
+          <label><input type="radio" name="topic" value="Ish taklifi" /><span class="opt">Ish taklifi</span></label>
+          <label><input type="radio" name="topic" value="Freelance loyiha" /><span class="opt">Freelance loyiha</span></label>
+        </fieldset>
+        <div class="frow">
+          <label class="field"><span>ISM</span><input class="inp" name="name" required placeholder="Ismingiz" autocomplete="name" /></label>
+          <label class="field"><span>EMAIL</span><input class="inp" name="email" type="email" required placeholder="siz@kompaniya.uz" autocomplete="email" /></label>
+        </div>
+        <label class="field"><span>MAVZU</span><input class="inp" name="subject" placeholder="So'rovingizning qisqacha mavzusi" /></label>
+        <label class="field"><span>XABAR <em id="cnt">0 / 500</em></span><textarea class="ta" name="message" rows="6" maxlength="500" required placeholder="Loyiha, muddat yoki muhandislik muammosi haqida yozing..." style="font-family:var(--font)"></textarea></label>
+        <div class="form-foot">
+          <button class="btn btn-solid" type="submit">Xabarni yuborish <span data-icon="arrow"></span></button>
+          <span class="small muted">To'g'ridan-to'g'ri email? <a href="mailto:maxmanazar025@gmail.com">maxmanazar025@gmail.com ↗</a></span>
+        </div>
+      </form>
+
+      <div class="contact-side">
+        <div class="card reveal">
+          <span class="label"><span data-icon="clock"></span> Joylashuv va vaqt</span>
+          <div class="clock-row"><b class="clock" id="clock">--:--:--</b><span class="badge" id="dp">—</span></div>
+          <p class="mono muted small" id="dl">Toshkent, UZ · UTC+5</p>
+          <p class="small" style="margin-top:10px;display:flex;gap:8px;align-items:center"><i class="live"></i> Odatda 2–4 soat ichida javob beraman · SLA &lt; 24 soat</p>
+        </div>
+        <div class="card reveal">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span class="label"><span data-icon="telegram"></span> Tezkor aloqa</span><span class="badge">15 daq</span></div>
+          <h3 class="t">Qo'ng'iroq belgilash</h3>
+          <p class="dim small">Email yozishmalarsiz — Telegram'da yozing va qulay vaqtda 15 daqiqalik qo'ng'iroq kelishamiz.</p>
+          <a class="btn btn-dark" style="margin-top:16px" href="https://t.me/maxmanazarbek" target="_blank" rel="noopener">Telegram'da yozish <span data-icon="ext"></span></a>
+        </div>
+        <div class="card reveal">
+          <span class="label"><span data-icon="mail"></span> Asosiy pochta</span>
+          <div class="copyline"><span>maxmanazar025@gmail.com</span><button data-copy="maxmanazar025@gmail.com" data-msg="Email nusxalandi ✓" aria-label="Emailni nusxalash"><span data-icon="copy"></span></button></div>
+          <div class="coord" style="margin-top:12px"><span>Toshkent, O'zbekiston 🇺🇿</span><span class="accent">41.2995° N, 69.2401° E</span></div>
+          <div class="mini-soc">
+            <a href="https://github.com/maxmanazar025" target="_blank" rel="noopener" aria-label="GitHub" data-icon="github"></a>
+            <a href="https://www.linkedin.com/in/maxmanazar-sultonov-dev" target="_blank" rel="noopener" aria-label="LinkedIn" data-icon="linkedin"></a>
+            <a href="https://t.me/maxmanazarbek" target="_blank" rel="noopener" aria-label="Telegram" data-icon="telegram"></a>
+            <a href="../connect/" aria-label="Barcha havolalar" data-icon="link"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section">
+      <p class="eyebrow c">So'rovlar bazasi</p>
+      <h2 class="h-xl c">Ko'p so'raladigan <span class="serif grad">Savollar</span></h2>
+      <p class="lead c" style="margin-bottom:40px">Bandlik, texnologiyalar va hamkorlik formati haqida qisqa javoblar.</p>
+      <div class="faq reveal">
+        <details><summary>Qanday xizmatlar taklif qilasiz?</summary><p>REST API ishlab chiqish (Node.js/Express, Python/FastAPI), PostgreSQL sxema dizayni, JWT autentifikatsiya, Telegram botlar va Mini App'lar, hamda LLM (Gemini va boshqalar) integratsiyasi.</p></details>
+        <details><summary>Freelance ishlarga bo'shmisiz?</summary><p>Ha — o'qishim bilan birga kichik va o'rta hajmdagi loyihalarni olaman. Loyiha hajmi va muddatini yozing, 24 soat ichida javob beraman.</p></details>
+        <details><summary>Qaysi texnologiyalarni afzal ko'rasiz?</summary><p>API uchun Node.js + Express yoki Python (asyncio), ma'lumotlar uchun PostgreSQL, deploy uchun Docker Compose. Botlar uchun aiogram yoki grammY.</p></details>
+        <details><summary>Masofaviy ishlaysizmi?</summary><p>Ha, masofaviy ishlayman. Toshkentda bo'lganim uchun gibrid formatdagi stajirovka takliflarini ham ko'rib chiqaman.</p></details>
+        <details><summary>Stajirovka yoki Junior lavozimga ochiqmisiz?</summary><p>Ha. Backend yo'nalishidagi Intern / Junior takliflarni mamnuniyat bilan ko'rib chiqaman — GitHub'dagi loyihalarim bilan tanishib chiqing.</p></details>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow c">Hamjamiyat izi</p>
+      <h2 class="h-xl c">G'oyalar <span class="serif grad">harakatga</span><br />aylanadigan joy.</h2>
+      <div class="bento" style="margin-top:50px">
+        <a class="card hov reveal" href="../work/#memora"><span class="label">Loyihalar</span><h3>Memora OS</h3><p class="dim small">Multi-agent AI akademik yordamchi.</p><span class="btn btn-dark">Ishni ko'rish <span data-icon="arrow"></span></span></a>
+        <a class="card hov reveal" href="https://github.com/maxmanazar025" target="_blank" rel="noopener">
+          <span class="label"><span data-icon="github"></span> GitHub</span>
+          <span class="label">So'nggi push · <span class="badge g" data-gh="ago">yaqinda</span></span>
+          <p class="commit-msg" data-gh="msg">"Repozitoriy yangilandi"</p>
+          <p class="mono small muted"><span data-gh="repo">maxmanazar025</span> · <span data-gh="sha">—</span></p>
+          <div class="gh-mini"><div><b data-gh="repos">4</b><small>PUBLIC REPOS</small></div><div><b data-gh="followers">0</b><small>FOLLOWERS</small></div></div>
+        </a>
+        <button class="card hov reveal" style="text-align:left" data-shell><span class="label">Terminal</span><h3 class="big-t">Terminal<br /><span class="serif grad">orqali kiring</span></h3><p class="dim small">neofetch, ls, cat about.txt — portfolio'ni CLI'da ko'ring.</p><span class="btn btn-dark">Ochish <span data-icon="term"></span></span></button>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="../assets/js/site.js"></script>
+<script>
+(() => {
+  const f = document.getElementById("form"), cnt = document.getElementById("cnt");
+  f.message.addEventListener("input", () => cnt.textContent = f.message.value.length + " / 500");
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    if (!f.reportValidity()) return;
+    const d = new FormData(f);
+    const subject = `[${d.get("topic")}] ${d.get("subject") || "Portfolio orqali xabar"}`;
+    const body = `${d.get("message")}\n\n— ${d.get("name")} (${d.get("email")})`;
+    location.href = `mailto:maxmanazar025@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    MS.toast("Pochta ilovasi ochilmoqda...");
+  });
+  const months = ["Yan","Fev","Mar","Apr","May","Iyun","Iyul","Avg","Sen","Okt","Noy","Dek"], days = ["Yak","Dush","Sesh","Chor","Pay","Jum","Shan"];
+  const tick = () => { const n = MS.tashkentNow(), h = n.getHours();
+    document.getElementById("clock").textContent = n.toLocaleTimeString("en-GB");
+    document.getElementById("dp").textContent = h < 5 ? "Tun" : h < 12 ? "Ertalab" : h < 17 ? "Kunduzi" : h < 21 ? "Kechqurun" : "Tun";
+    document.getElementById("dl").textContent = `${days[n.getDay()]}, ${n.getDate()} ${months[n.getMonth()]} ${n.getFullYear()} · UTC+5 · Toshkent, UZ`; };
+  tick(); setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>

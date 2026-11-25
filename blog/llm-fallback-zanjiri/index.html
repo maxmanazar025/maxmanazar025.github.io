@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM fallback zanjiri: model yiqilsa ham bot ishlasin | MS Blog</title>
+  <meta name="description" content="LLM API'lar bilan ishonchli ishlash: retry, exponential backoff, jitter, cool-down va provayderlararo fallback." />
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+</head>
+<body data-page="blog">
+<main class="page">
+  <div class="narrow">
+    <header class="article-head">
+      <a class="back" href="../"><span data-icon="arrow" style="transform:scaleX(-1);display:inline-flex"></span> Barcha maqolalar</a>
+      <p class="post-tag" style="margin-top:28px">AI</p>
+      <h1>LLM fallback zanjiri: model yiqilsa ham bot ishlasin</h1>
+      <p class="lead">Bepul tarifdagi LLM API — bu 429, 503 va timeout'lar bilan yashash degani. Memora OS'da buni qanday hal qilganimni ko'rsataman.</p>
+      <div class="post-meta"><img src="https://avatars.githubusercontent.com/u/249048169?v=4" alt="" /><span>Maxmanazar Sultonov</span>·<span>25 Noy 2026</span>·<span>6 daq o'qish</span></div>
+    </header>
+    <div class="post-cover" style="margin-bottom:40px" id="cover"></div>
+
+    <article class="article">
+      <p>AI yordamchi foydalanuvchi uchun "ishlaydi" yoki "ishlamaydi". Unga Gemini'ning rate limit'i yoki Groq'dagi vaqtinchalik 503 qiziq emas. Shuning uchun LLM chaqiruvini tarmoq chaqiruvi kabi emas, <strong>yiqilishi kutiladigan tashqi tizim</strong> kabi loyihaladim.</p>
+
+      <h2>1. Bitta protokol — ko'p provayder</h2>
+      <p>Gemini, OpenAI, Groq va OpenRouter — hammasi <strong>OpenAI-compatible Chat Completions</strong> protokolini qo'llab-quvvatlaydi. Demak, bitta HTTP klient (<code>httpx</code>) va faqat <code>base_url</code> + API kalit almashtirilsa bo'ldi. Zanjir esa oddiy konfiguratsiya qatori:</p>
+      <pre><code>LLM_SMART_CHAIN=<span class="tok-s">gemini/flash,gemini/flash-lite,groq/llama</span>
+LLM_FAST_CHAIN=<span class="tok-s">gemini/flash-lite,groq/llama</span></code></pre>
+      <p>Kaliti berilmagan provayder zanjirdan avtomatik tushib qoladi — kod o'zgarmaydi.</p>
+
+      <h2>2. Ikki turdagi xato</h2>
+      <p>Hamma xato bir xil emas. Men ularni ikkiga ajrataman:</p>
+      <ul>
+        <li><strong>Vaqtinchalik</strong> — 408, 429, 500, 502, 503, 504, timeout, ulanish xatosi. Bir oz kutib, <em>xuddi shu</em> route'ni qayta urinish kerak.</li>
+        <li><strong>Qayta urinib bo'lmaydigan</strong> — 400, 401, 404 (noto'g'ri model nomi, yaroqsiz kalit). Qayta urinish — vaqtni yo'qotish. Darhol keyingi route'ga o'tamiz.</li>
+      </ul>
+
+      <h2>3. Exponential backoff + jitter</h2>
+      <p>Qayta urinishlar orasidagi kutish har safar ikki baravar oshadi, ustiga tasodifiy "jitter" qo'shiladi — shunda bir nechta so'rov bir vaqtda qayta urilib, serverni yana bo'g'ib qo'ymaydi. Agar server <code>Retry-After</code> sarlavhasida qisqa vaqt bersa — shunga amal qilamiz.</p>
+      <pre><code><span class="tok-k">async def</span> <span class="tok-f">call_chain</span>(routes, messages):
+    <span class="tok-k">for</span> route <span class="tok-k">in</span> routes:
+        <span class="tok-k">if</span> route.cooling_down(): <span class="tok-k">continue</span>      <span class="tok-c"># yaqinda yiqilgan — o'tkazib yuboramiz</span>
+        <span class="tok-k">for</span> attempt <span class="tok-k">in</span> range(MAX_RETRIES):
+            <span class="tok-k">try</span>:
+                <span class="tok-k">return await</span> route.complete(messages)
+            <span class="tok-k">except</span> RetryableError <span class="tok-k">as</span> e:
+                delay = e.retry_after <span class="tok-k">or</span> BASE * 2 ** attempt
+                <span class="tok-k">await</span> asyncio.sleep(delay + random.uniform(0, delay / 2))
+            <span class="tok-k">except</span> FatalError:
+                <span class="tok-k">break</span>                               <span class="tok-c"># keyingi route'ga</span>
+        route.start_cooldown()
+    <span class="tok-k">raise</span> LLMError(<span class="tok-s">"Barcha route'lar yiqildi"</span>)</code></pre>
+      <p class="muted small">Yuqoridagi kod g'oyani ko'rsatish uchun soddalashtirilgan.</p>
+
+      <h2>4. Cool-down: bir marta yiqilgan route'ga qaytib urilmaslik</h2>
+      <p>Agar route barcha urinishlarni tugatsa, u qisqa muddatga "sovutiladi". Keyingi so'rovlar uni umuman chaqirmay, to'g'ridan-to'g'ri sog'lom route'ga boradi. Aks holda har bir xabar yiqilgan modelda retry kutib, foydalanuvchi uchun bot "sekin" bo'lib qoladi.</p>
+
+      <h2>5. Provayder almashganda tarix buzilmasligi</h2>
+      <p>Nozik muammo: suhbat tarixida bitta provayder yaratgan assistant xabarlari bor, keyingi qadam esa boshqa provayderga ketishi mumkin. Ba'zi provayderlar o'zlarining maxsus maydonlarini qaytarib olishni talab qiladi, boshqalari esa ularni tushunmaydi. Yechim — har bir xabarni qaysi provayder yaratganini belgilab qo'yish va boshqa provayderga yuborishda uni ko'chma OpenAI formatiga (<code>role</code>, <code>content</code>, <code>tool_calls</code>) qisqartirish.</p>
+
+      <h2>6. JSON'ni "yumshoq" parse qilish</h2>
+      <p>Modelga "faqat JSON qaytar" desangiz ham, u ba'zan <code>```json</code> ichiga o'raydi yoki oldidan bir gap qo'shadi. Shuning uchun parser avval fence'larni olib tashlaydi, keyin birinchi <code>{</code> / <code>[</code> va oxirgi <code>}</code> / <code>]</code> orasini kesib oladi.</p>
+
+      <h2>Natija</h2>
+      <ul>
+        <li>Bitta provayder yiqilsa — foydalanuvchi buni sezmaydi.</li>
+        <li>Barcha route'lar yiqilsa — worker egasiga qisqa diagnostika xabari yuboradi (rate-limit bilan, spam bo'lmasligi uchun).</li>
+        <li>Yangi model chiqsa — faqat <code>.env</code> o'zgaradi.</li>
+      </ul>
+      <p>Manba kodi: <a class="accent" href="https://github.com/maxmanazar025/pdp-assistant" target="_blank" rel="noopener">github.com/maxmanazar025/pdp-assistant</a></p>
+    </article>
+    <div class="article-foot">
+      <a class="btn btn-ghost" href="../memora-os-arxitekturasi/">← Memora OS arxitekturasi</a>
+      <a class="btn btn-ghost" href="../express-jwt-rbac/">Keyingi: JWT va RBAC →</a>
+    </div>
+  </div>
+</main>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/covers.js"></script>
+<script>document.getElementById("cover").innerHTML = MS_COVER("chain");</script>
+</body>
+</html>

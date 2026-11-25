@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect | Maxmanazar Sultonov (MS)</title>
+  <meta name="description" content="Barcha tarmoqlar va aloqa ma'lumotlari bir joyda: Telegram, LinkedIn, GitHub, Email." />
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body data-page="connect">
+<main class="page">
+  <div class="container">
+    <header class="p-split">
+      <div><p class="slash">// Digital footprint</p><h1 class="giant">NETWORK<br />&amp; LINKS.</h1></div>
+      <div><p class="desc">Barcha dasturchi tarmoqlarim, ijtimoiy kanallar va aloqa ma'lumotlari — bir joyda.</p>
+        <div class="pill" style="margin-top:20px">To'g'ridan-to'g'ri so'rov bormi? <a class="accent" href="../contact/">Aloqa sahifasi →</a></div></div>
+    </header>
+    <div class="connect-grid">
+      <aside class="card profile reveal">
+        <div class="profile-top"><img src="https://avatars.githubusercontent.com/u/249048169?v=4" alt="Maxmanazar Sultonov" /><div><span class="badge">About</span><h3>Maxmanazar (MS)</h3></div></div>
+        <p class="dim small">Backend, botlar va AI kesishmasida ishlayman. Meni internetda shu yerlardan topasiz.</p>
+        <div class="chips" style="margin-top:14px"><i>Backend</i><i>Bots</i><i>AI</i><i>Open source</i></div>
+        <div class="kv">
+          <div><span data-icon="pin"></span><span><small>JOYLASHUV</small><b>Toshkent, O'zbekiston 🇺🇿</b></span></div>
+          <div><span data-icon="clock"></span><span><small>MAHALLIY VAQT (UZT)</small><b class="mono" id="t">--:--</b></span></div>
+          <div><span data-icon="sparkle"></span><span><small>HOLAT</small><b id="st">—</b></span></div>
+        </div>
+      </aside>
+      <div class="link-list">
+        <a class="card hov link-card reveal" style="--c:#229ed9" href="https://t.me/maxmanazarbek" target="_blank" rel="noopener"><span class="ic" data-icon="telegram"></span><div><h3>Telegram</h3><p>Eng tez javob — shaxsiy xabar va blog kanali.</p><span class="h">@maxmanazarbek</span></div><span class="go" data-icon="ext"></span></a>
+        <a class="card hov link-card reveal" style="--c:#0a66c2" href="https://www.linkedin.com/in/maxmanazar-sultonov-dev" target="_blank" rel="noopener"><span class="ic" data-icon="linkedin"></span><div><h3>LinkedIn</h3><p>Backend Developer · PDP University · Node.js · Python · PostgreSQL</p><span class="h">Maxmanazar Sultonov</span></div><span class="go" data-icon="ext"></span></a>
+        <a class="card hov link-card reveal" style="--c:var(--text)" href="https://github.com/maxmanazar025" target="_blank" rel="noopener"><span class="ic" data-icon="github"></span><div><h3>GitHub</h3><p>Loyihalar, tajribalar va ochiq kod.</p><span class="h">maxmanazar025</span></div><span class="go" data-icon="ext"></span></a>
+        <a class="card hov link-card reveal" style="--c:#ea4335" href="mailto:maxmanazar025@gmail.com"><span class="ic" data-icon="mail"></span><div><h3>Email</h3><p>Rasmiy takliflar va hamkorlik uchun.</p><span class="h">maxmanazar025@gmail.com</span></div><span class="go" data-icon="ext"></span></a>
+        <div class="duo">
+          <a class="card hov reveal" href="../blog/"><span class="label">Yozuvlar</span><h3 style="margin:8px 0 4px">Field Notes</h3><p class="dim small">Backend va AI bo'yicha maqolalar.</p></a>
+          <button class="card hov reveal" style="text-align:left" data-shell><span class="label">Yangi tajriba</span><h3 style="margin:8px 0 4px">Interaktiv terminal</h3><p class="dim small">Portfolio bo'ylab terminal orqali sayohat.</p></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="../assets/js/site.js"></script>
+<script>
+  (() => { const t = document.getElementById("t"), s = document.getElementById("st");
+    const tick = () => { const n = MS.tashkentNow(), h = n.getHours(), d = n.getDay();
+      t.textContent = n.toLocaleTimeString("en-GB") + " (GMT+5) · " + n.toLocaleDateString("uz-UZ", { weekday: "short", day: "numeric", month: "short" });
+      s.textContent = h >= 0 && h < 7 ? "Uxlayapti 😴" : (d >= 1 && d <= 6 && h >= 8 && h < 15) ? "Darsda / o'qishda 🎓" : h < 23 ? "Kod yozmoqda 💻" : "Dam olmoqda 🌙"; };
+    tick(); setInterval(tick, 1000); })();
+</script>
+</body>
+</html>

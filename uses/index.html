@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uses | Maxmanazar Sultonov (MS)</title>
+  <meta name="description" content="Har kuni ishlatadigan vositalar: muhit, dasturchi asboblari, backend stek va servislar." />
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body data-page="uses">
+<main class="page">
+  <div class="container">
+    <header class="p-split">
+      <div><p class="slash">// System inventory</p><h1 class="giant">USES</h1></div>
+      <p class="desc">Har kuni kod yozish, API loyihalash va botlarni ishga tushirish uchun ishlatadigan muhit, asboblar va servislar ro'yxati.</p>
+    </header>
+    <div id="uses"></div>
+  </div>
+</main>
+<script src="../assets/js/site.js"></script>
+<script>
+(() => {
+  const ic = s => `<img src="https://cdn.simpleicons.org/${s}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'◆',className:'accent'}))">`;
+  const S = [
+    ["01. Muhit", "Ish stansiyasi", "Kundalik ish Windows 11 Pro'da: PowerShell va Git Bash terminallari, Docker Desktop konteynerlar uchun. Botlar Docker Compose orqali istalgan Linux serverga ko'chirishga tayyor.",
+      [["windows", "Windows 11 Pro", "Asosiy OS"], ["linux", "Linux", "Server muhiti"], ["gnubash", "Git Bash / PowerShell", "Terminal"], ["docker", "Docker Desktop", "Konteynerlar"]]],
+    ["02. Dasturiy ta'minot", "Dasturchi asboblari", "Muhitim VS Code atrofida qurilgan. API'larni Postman bilan sinayman, versiyalarni Git va GitHub'da boshqaraman, AI yordamchilardan kod ko'rib chiqish va prototiplashda foydalanaman.",
+      [["vscodium", "VS Code", "Asosiy IDE"], ["git", "Git", "Versiyalar nazorati"], ["github", "GitHub", "Kod va portfolio"], ["postman", "Postman", "API testlash"], ["anthropic", "Claude Code", "AI bilan kodlash"], ["telegram", "BotFather", "Bot yaratish"]]],
+    ["03. Backend stek", "Production stek", "Tez prototip uchun Node.js + Express, async va AI ishlari uchun Python. Ma'lumotlar uchun — doim PostgreSQL.",
+      [["nodedotjs", "Node.js", "Runtime"], ["express", "Express.js", "REST API"], ["python", "Python 3", "asyncio, aiogram"], ["fastapi", "FastAPI", "Async API"], ["postgresql", "PostgreSQL", "Asosiy baza"], ["sqlalchemy", "SQLAlchemy", "Async ORM"], ["prisma", "Prisma", "Tip-xavfsiz ORM"], ["jsonwebtokens", "JWT", "Autentifikatsiya"]]],
+    ["04. Servislar", "Bulut va API'lar", "Boshqariladigan servislar va tashqi API'lar — kamroq infratuzilma, ko'proq mahsulot.",
+      [["supabase", "Supabase", "Managed Postgres"], ["cloudflareworkers", "Cloudflare Workers", "Edge funksiyalar"], ["googlegemini", "Google AI Studio", "Gemini API"], ["googlecalendar", "Google Calendar API", "Integratsiya"], ["googlecloud", "Google Cloud Console", "OAuth & API'lar"], ["githubpages", "GitHub Pages", "Statik hosting"]]],
+  ];
+  document.getElementById("uses").innerHTML = S.map(([n, h, p, items]) => `<section class="uses-sec reveal"><div><span class="num">${n}</span><h2>${h}</h2><p>${p}</p></div>
+    <div class="uses-list">${items.map(([s, t, d]) => `<div class="use"><span class="ic">${ic(s)}</span><div><b>${t}</b><small>${d}</small></div></div>`).join("")}</div></section>`).join("");
+  window.MS.observeReveal();
+})();
+</script>
+</body>
+</html>

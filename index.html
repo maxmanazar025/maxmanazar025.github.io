@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maxmanazar Sultonov (MS) | Backend Developer</title>
+  <meta name="description" content="Maxmanazar Sultonov — Toshkentlik Backend Developer. Node.js, Express, Python va PostgreSQL asosida REST API, Telegram botlar va AI integratsiyalar." />
+  <meta property="og:title" content="Maxmanazar Sultonov | Backend Developer" />
+  <meta property="og:description" content="REST API, Telegram botlar va kengaytiriladigan backend tizimlar." />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/249048169?v=4" />
+  <meta name="theme-color" content="#050505" />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body data-page="home">
+  <main>
+    <section class="hero">
+      <p class="hero-status"><span class="typer" data-lines="CTRL+K — BUYRUQLAR PANELI|FOKUS: REST API & TELEGRAM BOTLAR|HOLAT: KENGAYTIRILADIGAN TIZIMLAR QURYAPMAN|TERMINAL: CTRL+K → 'shell'"></span><span class="caret">▌</span></p>
+      <h1 class="hero-name">Maxmanazar</h1>
+      <p class="hero-role"><span class="accent">&gt;</span> Backend Developer</p>
+      <p class="hero-text">
+        Node.js, Express, Python va PostgreSQL asosida ishonchli REST API'lar, Telegram botlar
+        va Mini App'lar quraman. Toza arxitektura, aniq API kontraktlar va AI'ni amaliy vositaga
+        aylantiradigan tizimlar — o'qish bilan parallel real loyihalarda.
+      </p>
+      <div class="hero-socials">
+        <a href="https://github.com/maxmanazar025" target="_blank" rel="noopener" aria-label="GitHub" class="soc" data-icon="github"></a>
+        <a href="https://t.me/maxmanazarbek" target="_blank" rel="noopener" aria-label="Telegram" class="soc" data-icon="telegram"></a>
+        <a href="https://www.linkedin.com/in/maxmanazar-sultonov-dev" target="_blank" rel="noopener" aria-label="LinkedIn" class="soc" data-icon="linkedin"></a>
+      </div>
+      <button class="orb" data-cmdk aria-label="Buyruqlar panelini ochish" title="Ctrl + K"><span></span></button>
+    </section>
+  </main>
+  <script src="assets/js/site.js"></script>
+  <script>
+    (() => {
+      const el = document.querySelector(".typer"), lines = el.dataset.lines.split("|");
+      let li = 0, ci = 0, del = false;
+      (function type() {
+        const w = lines[li]; el.textContent = w.slice(0, ci);
+        if (!del && ci < w.length) ci++; else if (del && ci > 0) ci--;
+        else if (!del) { del = true; return setTimeout(type, 1800); } else { del = false; li = (li + 1) % lines.length; }
+        setTimeout(type, del ? 26 : 55);
+      })();
+    })();
+  </script>
+</body>
+</html>

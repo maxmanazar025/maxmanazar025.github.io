@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memora OS: bot, worker va bitta PostgreSQL | MS Blog</title>
+  <meta name="description" content="Bitta foydalanuvchi uchun proaktiv AI yordamchi arxitekturasi: ikki mustaqil jarayon, Postgres orqali muvofiqlashuv va nega Redis kerak bo'lmadi." />
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+</head>
+<body data-page="blog">
+<main class="page">
+  <div class="narrow">
+    <header class="article-head">
+      <a class="back" href="../"><span data-icon="arrow" style="transform:scaleX(-1);display:inline-flex"></span> Barcha maqolalar</a>
+      <p class="post-tag" style="margin-top:28px">Arxitektura</p>
+      <h1>Memora OS: bot, worker va bitta PostgreSQL</h1>
+      <p class="lead">Bitta talaba uchun proaktiv AI yordamchini qanday qurdim — va nega eng muhim qarorlarim "nima qo'shmaslik" haqida bo'ldi.</p>
+      <div class="post-meta"><img src="https://avatars.githubusercontent.com/u/249048169?v=4" alt="" /><span>Maxmanazar Sultonov</span>·<span>25 Noy 2026</span>·<span>7 daq o'qish</span></div>
+    </header>
+    <div class="post-cover" style="margin-bottom:40px" id="cover"></div>
+
+    <article class="article">
+      <p>Memora OS — Telegram'dagi shaxsiy akademik yordamchim. U dars jadvalimni universitetning Google Sheets'idan o'qiydi, darsdan 15 daqiqa oldin ogohlantiradi, dars tugagach "bugun nima o'tildi?" deb so'raydi va javobimdan uy vazifasini ajratib, Google Tasks'ga yozadi. Ertalab xulosa, yakshanba kuni haftalik hisobot yuboradi.</p>
+      <p>Eng qiziq tomoni — bu funksiyalar emas, balki ularni <strong>ishonchli</strong> ishlatadigan arxitektura. Quyida asosiy qarorlarni ko'rib chiqaman.</p>
+
+      <h2>1. Ikki jarayon: biri reaksiya, biri vaqt</h2>
+      <p>Tizimda ikkita asosiy konteyner bor va ular bir xil Docker image'dan ishga tushadi:</p>
+      <ul>
+        <li><strong>bot</strong> — faqat Telegram update'lariga javob beradi: menyu tugmalari, callback'lar, erkin matn va ovozli xabarlar.</li>
+        <li><strong>worker</strong> — faqat vaqtga qarab harakat qiladi: ertalabki brifing, T-15 ogohlantirish, dars yakunidagi so'rov, eslatmalar, sinxronlash.</li>
+      </ul>
+      <p>Ular bir-biriga to'g'ridan-to'g'ri murojaat qilmaydi. Yagona aloqa vositasi — <strong>PostgreSQL qatorlari</strong>. Masalan, worker dars tugaganda <code>conversation_state = awaiting_lesson_log</code> deb yozib qo'yadi, bot esa keyingi xabarimda shu holatni o'qiydi. Natijada biri qayta ishga tushsa, ikkinchisi bundan bexabar ishlayveradi.</p>
+      <pre><code><span class="tok-c"># docker-compose.yml (qisqartirilgan)</span>
+services:
+  db:       <span class="tok-c"># postgres:16-alpine + healthcheck</span>
+  migrate:  <span class="tok-c"># Alembic migratsiyalari, keyin chiqib ketadi</span>
+    depends_on: { db: { condition: <span class="tok-s">service_healthy</span> } }
+  bot:      <span class="tok-c"># Telegram long polling</span>
+    depends_on: { migrate: { condition: <span class="tok-s">service_completed_successfully</span> } }
+  worker:   <span class="tok-c"># proaktiv dvigatel</span>
+    depends_on: { migrate: { condition: <span class="tok-s">service_completed_successfully</span> } }</code></pre>
+      <p><code>migrate</code> — bir martalik servis: sxemani yangilaydi va chiqadi. bot va worker faqat u muvaffaqiyatli tugagandan keyin ishga tushadi. Bu "kod yangi, sxema eski" degan klassik xatoni yo'q qiladi.</p>
+
+      <h2>2. Nega Redis yo'q?</h2>
+      <p>Odatiy refleks: "navbat kerakmi? Redis qo'yamiz". Lekin bu tizimda <strong>bitta foydalanuvchi</strong> bor. Redis qo'shish — ikkinchi holatli servis va ikkinchi "haqiqat manbai" degani, throughput bo'yicha esa hech qanday foyda yo'q.</p>
+      <p>Buning o'rniga hamma narsa Postgres'da:</p>
+      <ul>
+        <li><strong>Bildirishnomalar ledger'i</strong> — har bir yuborilgan xabar uchun <code>UNIQUE</code> dedupe kaliti. Worker qayta ishga tushsa ham, bir xil ogohlantirish ikki marta ketmaydi.</li>
+        <li><strong>Outbox flag</strong> — Google Tasks'ga yuborilishi kerak bo'lgan vazifalar shu yerda navbatda turadi.</li>
+        <li><strong>Advisory lock</strong> — bir vaqtda faqat bitta worker "leader" bo'ladi.</li>
+      </ul>
+      <blockquote>Tranzaksiya va uniqueness constraint'lar keshga qaraganda kuchliroq kafolat beradi. Agar tizim multi-tenant bo'lsa — ledger va outbox jadvallari broker qo'yish uchun tayyor "tikuv" joylari.</blockquote>
+
+      <h2>3. Cron emas — stateless tick loop</h2>
+      <p>Worker har 20 soniyada, soatga tekislangan holda "tick" qiladi. Har tick'da u bazadan "hozir nima qilish kerak?" degan savolga javob hisoblaydi: brifing vaqti keldimi, 15 daqiqadan keyin dars bormi, dars tugadimi. Xotirada saqlanadigan job store yo'q — demak, restart'da hech narsa yo'qolmaydi va cron drift ham bo'lmaydi.</p>
+
+      <h2>4. So'rov marshruti: tez yo'l va agentlar</h2>
+      <p>Har bir xabar LLM'ga borishi shart emas. Reply-klaviatura tugmasi bosilsa — bu <strong>fast path</strong>: ekran to'g'ridan-to'g'ri Postgres'dan chiziladi, LLM chaqirilmaydi. Erkin matn kelsa, avval suhbat holati tekshiriladi, keyin tezkor model JSON ko'rinishida niyatni aniqlaydi va ixtisoslashgan agentlardan biriga yo'naltiradi: jadval va kalendar, vazifalar, o'qish murabbiyi yoki umumiy agent. Har bir agentning o'z tool'lari bor.</p>
+      <p>Muhim detal: agent kalendarga hodisa qo'shishdan oldin <strong>tasdiqlash kartasi</strong>ni ko'rsatadi (human-in-the-loop). AI taklif qiladi — qarorni men qabul qilaman.</p>
+
+      <h2>5. Xavfsizlik: faqat egasi</h2>
+      <p>Bot shaxsiy, shuning uchun eng birinchi middleware — <strong>OwnerOnly</strong>: boshqa chat ID'lardan kelgan update'lar jimgina tashlanadi. Hech qanday javob, hech qanday xato xabari — hujumchiga signal ham yo'q.</p>
+
+      <h2>Xulosa</h2>
+      <ul>
+        <li>Jarayonlarni vazifasiga qarab ajrating: <em>reaksiya</em> va <em>vaqt</em>.</li>
+        <li>Ular o'rtasidagi aloqani baza orqali qiling — shunda har biri mustaqil yiqilib, mustaqil turadi.</li>
+        <li>Yangi servis qo'shishdan oldin so'rang: mavjud baza buni kafolatlay oladimi?</li>
+      </ul>
+      <p>Manba kodi: <a class="accent" href="https://github.com/maxmanazar025/pdp-assistant" target="_blank" rel="noopener">github.com/maxmanazar025/pdp-assistant</a></p>
+    </article>
+    <div class="article-foot">
+      <a class="btn btn-ghost" href="../">← Barcha maqolalar</a>
+      <a class="btn btn-ghost" href="../llm-fallback-zanjiri/">Keyingi: LLM fallback zanjiri →</a>
+    </div>
+  </div>
+</main>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/covers.js"></script>
+<script>document.getElementById("cover").innerHTML = MS_COVER("arch");</script>
+</body>
+</html>

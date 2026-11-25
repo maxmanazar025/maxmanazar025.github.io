@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog | Maxmanazar Sultonov (MS)</title>
+  <meta name="description" content="Field Notes: backend arxitektura, Telegram botlar, LLM integratsiya va API xavfsizligi bo'yicha maqolalar." />
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body data-page="blog">
+<main class="page">
+  <div class="container">
+    <header class="p-hero">
+      <span class="ghost" aria-hidden="true">NOTES</span>
+      <span class="cross" style="left:24%;top:50px"></span><span class="cross" style="right:24%;top:150px"></span>
+      <p class="eyebrow c">Daftar va qaydlar</p>
+      <h1 class="h-xl">Field <span class="serif grad">Notes</span></h1>
+      <p class="lead">Backend arxitektura, Telegram botlar, LLM integratsiya va API xavfsizligi bo'yicha chuqur tahlillar — o'z loyihalarimdan.</p>
+    </header>
+
+    <div class="blog-tools">
+      <div class="filters" id="tags"></div>
+      <label class="search"><span data-icon="search"></span><input id="q" placeholder="Maqola qidirish..." aria-label="Maqola qidirish" /><kbd>/</kbd></label>
+    </div>
+
+    <div class="featured reveal" id="featured"></div>
+    <p class="label" style="margin-bottom:20px">Barcha maqolalar</p>
+    <div class="post-grid" id="grid"></div>
+    <p class="empty" id="empty">Hech narsa topilmadi.</p>
+
+    <section class="section">
+      <div class="card reveal" style="text-align:center;padding:50px 26px">
+        <span class="label" style="justify-content:center">Obuna</span>
+        <h2 class="h-lg" style="margin:10px 0">Yangi maqolalarni <span class="serif grad">o'tkazib yubormang</span></h2>
+        <p class="lead" style="margin-bottom:24px">Qisqa qaydlar va yangiliklar Telegram kanalimda chiqadi.</p>
+        <a class="btn btn-solid" href="https://t.me/maxmanazarbek" target="_blank" rel="noopener"><span data-icon="telegram"></span> @maxmanazarbek</a>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="../assets/js/site.js"></script>
+<script src="../assets/js/covers.js"></script>
+<script>
+(() => {
+  const POSTS = [
+    { slug: "memora-os-arxitekturasi", tag: "Arxitektura", cover: "arch", t: "Memora OS: bot, worker va bitta PostgreSQL", d: "Bitta foydalanuvchi uchun proaktiv AI yordamchini qanday qurdim: ikki mustaqil jarayon, Postgres orqali muvofiqlashuv va nega Redis kerak bo'lmadi.", date: "25 Noy 2026", min: 7 },
+    { slug: "llm-fallback-zanjiri", tag: "AI", cover: "chain", t: "LLM fallback zanjiri: model yiqilsa ham bot ishlasin", d: "429, 5xx va timeout'lar — LLM API'larning kundalik haqiqati. Retry, exponential backoff, jitter, cool-down va provayderlararo o'tish.", date: "25 Noy 2026", min: 6 },
+    { slug: "express-jwt-rbac", tag: "Xavfsizlik", cover: "lock", t: "Express.js'da JWT va RBAC: CareTrack tajribasi", d: "authenticateToken va authorizeRoles middleware'lari, 401 va 403 farqi, hamda production'dan oldin tuzatish kerak bo'lgan xatolar.", date: "25 Noy 2026", min: 6 },
+  ];
+  const AV = "https://avatars.githubusercontent.com/u/249048169?v=4";
+  const meta = p => `<div class="post-meta"><img src="${AV}" alt="" /><span>Maxmanazar Sultonov</span>·<span>${p.date}</span>·<span>${p.min} daq</span></div>`;
+  const cover = p => `<div class="post-cover">${window.MS_COVER(p.cover)}</div>`;
+  const tags = ["Barchasi", ...new Set(POSTS.map(p => p.tag))];
+  let tag = "Barchasi", q = "";
+  const T = document.getElementById("tags");
+  T.innerHTML = tags.map((t, i) => `<button class="filter${i ? "" : " active"}" data-t="${t}">${t}</button>`).join("");
+  const render = () => {
+    const list = POSTS.filter(p => (tag === "Barchasi" || p.tag === tag) && (p.t + p.d + p.tag).toLowerCase().includes(q));
+    const [f, ...rest] = list;
+    document.getElementById("featured").innerHTML = f ? `<a href="${f.slug}/">${cover(f)}</a>
+      <div><span class="post-tag">${f.tag}</span><h2><a href="${f.slug}/">${f.t}</a></h2><p class="dim">${f.d}</p>${meta(f)}
+        <div class="side-posts" style="margin-top:28px">${rest.slice(0, 2).map(p => `<a class="side-post" href="${p.slug}/">${cover(p)}<div><span class="post-tag">${p.tag}</span><h3>${p.t}</h3><p>${p.d}</p></div></a>`).join("")}</div></div>` : "";
+    document.getElementById("grid").innerHTML = list.map(p => `<a class="post-card reveal in" href="${p.slug}/">${cover(p)}<span class="post-tag">${p.tag}</span><h3>${p.t}</h3><p>${p.d}</p>${meta(p)}</a>`).join("");
+    document.getElementById("empty").style.display = list.length ? "none" : "block";
+  };
+  T.addEventListener("click", e => { const b = e.target.closest(".filter"); if (!b) return; tag = b.dataset.t; T.querySelectorAll(".filter").forEach(x => x.classList.toggle("active", x === b)); render(); });
+  const qi = document.getElementById("q");
+  qi.addEventListener("input", () => { q = qi.value.trim().toLowerCase(); render(); });
+  addEventListener("keydown", e => { if (e.key === "/" && document.activeElement.tagName !== "INPUT") { e.preventDefault(); qi.focus(); } });
+  render();
+})();
+</script>
+</body>
+</html>

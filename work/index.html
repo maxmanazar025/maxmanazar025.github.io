@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work | Maxmanazar Sultonov (MS)</title>
+  <meta name="description" content="Loyihalar va arxitektura: Memora OS, CareTrack Clinic, Smart Planner Bot, Telegram Mini App'lar." />
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+<body data-page="work">
+<main class="page">
+  <div class="container">
+    <header class="p-hero">
+      <span class="ghost" aria-hidden="true">SYSTEMS</span>
+      <span class="cross" style="left:20%;top:40px"></span><span class="cross" style="right:20%;top:140px"></span>
+      <p class="eyebrow c">Case study va arxitektura</p>
+      <h1 class="h-xl">Tanlangan <span class="serif grad">Ishlar</span></h1>
+      <p class="lead">AI yordamchilar, REST API'lar va Telegram avtomatlashtirish tizimlari — arxitektura qarorlari bilan.</p>
+      <div class="filters" role="tablist" id="filters"></div>
+    </header>
+
+    <div class="projects" id="projects"></div>
+
+    <!-- Contributions -->
+    <section class="section">
+      <p class="eyebrow c">Open source va kod tezligi</p>
+      <h2 class="h-xl c">Uzluksiz <span class="serif grad">Hissalar</span></h2>
+      <p class="lead c">Yil davomidagi commit taqsimoti va GitHub'dagi kundalik kodlash ritmi.</p>
+      <div class="row-c"><a class="btn btn-ghost" href="https://github.com/maxmanazar025" target="_blank" rel="noopener"><span data-icon="github"></span> @maxmanazar025 <span class="mono small muted">GITHUB ↗</span></a></div>
+      <div class="contrib-stats reveal">
+        <div><b id="c-total">—</b><span class="k">HISSALAR (SO'NGGI YIL)</span><small id="c-peak">Yuklanmoqda...</small></div>
+        <div><b id="c-cur">—</b><span class="k">JORIY STREAK</span><small>Ketma-ket faol kunlar</small></div>
+        <div><b id="c-long">—</b><span class="k">ENG UZUN STREAK</span><small>Rekord ketma-ketlik</small></div>
+        <div><b data-gh="repos">4</b><span class="k">PUBLIC REPOS ↗</span><small>Ochiq kod va asboblar</small></div>
+      </div>
+      <div class="heat-wrap reveal"><div class="heat" id="heat" aria-label="GitHub contributions heatmap"></div></div>
+      <div class="heat-foot"><span><i class="live"></i> Jonli GitHub sinxronlash</span><span class="legend">Kam <span style="background:var(--border)"></span><span data-l="1"></span><span data-l="2"></span><span data-l="3"></span><span data-l="4"></span> Ko'p</span></div>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow c">Davomi</p>
+      <h2 class="h-xl c">Arxitekturadan<br /><span class="serif grad">hamkorlikka.</span></h2>
+      <div class="bento" style="margin-top:50px">
+        <a class="card hov reveal" href="../blog/"><span class="label">Yozuvlar</span><h3>Har bir loyiha ortidagi qarorlar</h3><p class="dim small">Arxitektura, xatolar va o'rgangan saboqlar — blogda.</p><span class="btn btn-dark">Blogga o'tish <span data-icon="arrow"></span></span></a>
+        <a class="card hov reveal" href="../labs/"><span class="label">Labs</span><h3>Interaktiv tajribalar</h3><p class="dim small">Token Bucket, Circuit Breaker, JWT decoder va boshqa asboblar.</p><span class="btn btn-dark">Labs'ni ochish <span data-icon="arrow"></span></span></a>
+        <a class="card hov reveal" href="../contact/"><span class="label">Hamkorlik</span><h3 class="big-t">Keling,<br /><span class="serif grad">birga quramiz</span></h3><p class="dim small">Stajirovka, freelance yoki g'oya — yozing.</p><span class="btn btn-dark">Aloqa <span data-icon="arrow"></span></span></a>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="../assets/js/site.js"></script>
+<script>
+(() => {
+  const I = window.MS_ICON;
+  const C = { Python:"#3776ab", "Node.js":"#339933", "Express.js":"#a8a29e", PostgreSQL:"#336791", SQLAlchemy:"#d71f00", Alembic:"#6ba539", Docker:"#2496ed", aiogram:"#26a5e4", grammY:"#26a5e4", Gemini:"#8e75b2", httpx:"#f59e0b", pytest:"#0a9edc", JWT:"#d63aff", bcrypt:"#f87171", RBAC:"#fb923c", "REST API":"#4ade80", React:"#61dafb", Prisma:"#5a67d8", Supabase:"#3ecf8e", "PL/pgSQL":"#336791", "Telegram WebApp":"#26a5e4", "Google API":"#4285f4", HTML:"#e34f26", CSS:"#1572b6" };
+  const PROJ = [
+    { id:"memora", cat:"ai", t:"Memora OS", tags:["Flagship","Featured"], sub:"Multi-agent AI akademik yordamchi · Telegram", ic:"brain",
+      nodes:["Telegram","OwnerOnly MW","Router","Agents","PostgreSQL","Worker","LLM Chain","Google API"],
+      pipe:["Telegram","aiogram","Intent Router","Agents + Tools","PostgreSQL","Worker tick","Google Sync"],
+      chips:["Python","aiogram","SQLAlchemy","Alembic","PostgreSQL","Docker","Gemini","httpx","Google API","pytest"],
+      desc:"Bitta PDP talabasi uchun proaktiv, multi-agent Telegram tizimi. <b>bot</b> konteyneri faqat update'larga javob beradi (reply-klaviatura fast path, FSM, intent router → ixtisoslashgan agentlar va tool-calling sikli), <b>worker</b> esa faqat vaqtga qarab ishlaydi: ertalabki xulosa, dars oldidan T-15 ogohlantirish, dars yakunidagi so'rov va haftalik hisobot. Ikkalasi faqat PostgreSQL qatorlari orqali muvofiqlashadi — biri o'chsa, ikkinchisi ishlayveradi. Universitet jadvalini Google Sheets'dan sinxronlaydi, uy vazifalarini Google Tasks'ga yozadi, ovozli xabarlarni ffmpeg → STT orqali matnga aylantiradi va SM-2 asosidagi quiz'lar bilan takrorlatadi.",
+      metrics:[["4","SERVIS"],["20s","TICK LOOP"],["0","REDIS"]], links:[["Manba kodi","https://github.com/maxmanazar025/pdp-assistant"]] },
+    { id:"caretrack", cat:"api", t:"CareTrack Clinic", tags:["Full-stack"], sub:"Tibbiy yozuvlar va bemorlarni boshqarish", ic:"shield",
+      nodes:["Client","Express","authenticateToken","authorizeRoles","Routes","Data layer"],
+      pipe:["Client","Express Router","JWT verify","RBAC","Controller","db module"],
+      chips:["Node.js","Express.js","JWT","bcrypt","RBAC","REST API","HTML","CSS"],
+      desc:"Klinikalar uchun to'liq stekli tizim. Shifokorlar, bemorlar va kasalliklar bo'yicha CRUD endpoint'lar alohida Express router modullarida. Login paytida <b>bcrypt</b> bilan parol tekshiriladi va 24 soatlik <b>JWT</b> beriladi; <code class='accent'>authenticateToken</code> middleware tokenni tekshiradi, <code class='accent'>authorizeRoles(...)</code> esa rolga qarab ruxsat beradi. Xato javoblari ikki tilda (o'zbek + ingliz) qaytadi. Ma'lumotlar qatlami alohida modulga ajratilgan — saqlash usulini almashtirish oson.",
+      metrics:[["4","API MODUL"],["24h","TOKEN TTL"],["2","TIL"]], links:[["Manba kodi","https://github.com/maxmanazar025/caretrack_clinic"]] },
+    { id:"planner", cat:"bot", t:"Smart Planner Bot", tags:["Bot"], sub:"Maqsadlar va rejalar uchun Telegram bot", ic:"calendar",
+      nodes:["Telegram","grammY","Commands","pg Pool","users","plans"],
+      pipe:["Telegram","grammY","/start · /help","pg Pool","users / plans"],
+      chips:["Node.js","grammY","PostgreSQL","PL/pgSQL"],
+      desc:"Foydalanuvchilarga kunlik, oylik va yillik maqsadlarni saqlash imkonini beruvchi bot. <code class='accent'>/start</code> foydalanuvchini <b>users</b> jadvaliga avtomatik ro'yxatdan o'tkazadi; <b>plans</b> jadvali turi va bajarilganlik holati bilan; Telegram ID bo'yicha ON DELETE CASCADE bog'lanish. Sxema kelajakdagi obuna (paywall) modeli uchun <b>subscription_status</b> va <b>subscription_end_date</b> maydonlari bilan tayyorlangan.",
+      metrics:[["2","JADVAL"],["3","REJA TURI"]], links:[["Manba kodi","https://github.com/maxmanazar025/smart-planner-bot"]] },
+    { id:"miniapps", cat:"bot", t:"Smart Planner Pro & IshTop", tags:["Mini App"], sub:"Telegram Mini App'lar va avtomatlashtirish", ic:"layers",
+      nodes:["Mini App","React","Node API","Prisma","Supabase","Bot"],
+      pipe:["Telegram WebApp","React UI","Node API","Prisma ORM","Supabase Postgres"],
+      chips:["Node.js","React","Prisma","Supabase","Telegram WebApp"],
+      desc:"Vazifalarni boshqarish (Smart Planner Pro) va mikro-frilans (IshTop) uchun Telegram ichida ishlaydigan Mini App'lar. React interfeysi, Node.js API, <b>Prisma</b> orqali tip-xavfsiz ma'lumotlar qatlami va <b>Supabase</b>'dagi boshqariladigan PostgreSQL.",
+      metrics:[["2","ILOVA"]], links:[["Demo so'rash","https://t.me/maxmanazarbek"]] },
+  ];
+  const CATS = [["all","Barcha tizimlar"],["ai","AI & Agentlar"],["api","API & Backend"],["bot","Bots & Mini Apps"]];
+  const POS = [[16,18],[84,18],[8,50],[92,50],[16,82],[84,82],[50,10],[50,90]];
+  const f = document.getElementById("filters");
+  f.innerHTML = CATS.map(([k, n], i) => `<button class="filter${i ? "" : " active"}" data-f="${k}">${n} <b>${k === "all" ? PROJ.length : PROJ.filter(p => p.cat === k).length}</b></button>`).join("");
+  document.getElementById("projects").innerHTML = PROJ.map(p => {
+    const nodes = p.nodes.map((n, i) => `<span class="node" style="left:${POS[i][0]}%;top:${POS[i][1]}%;transform:translate(-50%,-50%)">${n}</span>`).join("");
+    const wires = p.nodes.map((n, i) => `<path d="M50 50 Q ${(50 + POS[i][0]) / 2} ${POS[i][1]} ${POS[i][0]} ${POS[i][1]}" vector-effect="non-scaling-stroke"/>`).join("");
+    return `<article class="project reveal" id="${p.id}" data-cat="${p.cat}">
+      <div class="project-top"><h3>${p.t}</h3><div class="tags">${p.tags.map((t, i) => `<span class="badge${i ? " b" : ""}">${t}</span>`).join("")}</div></div>
+      <div class="arch">
+        <div class="arch-head"><span>${p.sub}</span><a href="${p.links[0][1]}" target="_blank" rel="noopener" aria-label="${p.links[0][0]}">${I("ext")}</a></div>
+        <div class="arch-stage"><svg class="wires" viewBox="0 0 100 100" preserveAspectRatio="none">${wires}</svg>${nodes}<div class="core">${I(p.ic)}</div><span class="sys">SYSTEM.ARCHITECTURE</span></div>
+        <div class="pipeline"><b>PIPELINE:</b>${p.pipe.join("<i>→</i>")}</div>
+      </div>
+      <div class="chips">${p.chips.map(c => `<i><b style="--c:${C[c] || "var(--accent)"}"></b>${c}</i>`).join("")}</div>
+      <p>${p.desc}</p>
+      <div class="metrics">${p.metrics.map(([v, k]) => `<div><b>${v}</b><small>${k}</small></div>`).join("")}</div>
+      <div class="src">${p.links.map(([n, h]) => `<a href="${h}" target="_blank" rel="noopener">${I(h.includes("github") ? "github" : "telegram")} ${n} ↗</a>`).join("")}</div>
+    </article>`;
+  }).join("");
+  window.MS.observeReveal(document.getElementById("projects"));
+  // animate nodes
+  document.querySelectorAll(".arch-stage").forEach(st => { const n = st.querySelectorAll(".node"); let i = 0; setInterval(() => { n.forEach(x => x.classList.remove("lit")); n[i % n.length].classList.add("lit"); i++; }, 800); });
+  f.addEventListener("click", e => { const b = e.target.closest(".filter"); if (!b) return;
+    f.querySelectorAll(".filter").forEach(x => x.classList.toggle("active", x === b));
+    document.querySelectorAll(".project").forEach(p => p.classList.toggle("hide", b.dataset.f !== "all" && p.dataset.cat !== b.dataset.f)); });
+
+  // contributions heatmap (public API, no token)
+  (async () => {
+    const heat = document.getElementById("heat");
+    try {
+      const r = await fetch("https://github-contributions-api.jogruber.de/v4/maxmanazar025?y=last"); const j = await r.json();
+      const days = j.contributions || [];
+      const pad = days.length ? new Date(days[0].date).getDay() : 0;
+      heat.innerHTML = "<span style='visibility:hidden'></span>".repeat(pad) + days.map(d => `<span data-l="${d.level}" title="${d.date}: ${d.count} ta hissa"></span>`).join("");
+      const total = days.reduce((s, d) => s + d.count, 0), peak = Math.max(0, ...days.map(d => d.count));
+      let cur = 0, long = 0, run = 0;
+      days.forEach(d => { run = d.count ? run + 1 : 0; long = Math.max(long, run); });
+      for (let i = days.length - 1; i >= 0; i--) { if (days[i].count) cur++; else if (i === days.length - 1) continue; else break; }
+      document.getElementById("c-total").textContent = total;
+      document.getElementById("c-peak").textContent = `Eng faol kun: ${peak} ta hissa`;
+      document.getElementById("c-cur").textContent = cur + " kun";
+      document.getElementById("c-long").textContent = long + " kun";
+    } catch {
+      heat.innerHTML = Array.from({ length: 371 }, () => "<span></span>").join("");
+      document.getElementById("c-peak").textContent = "Ma'lumotni GitHub'da ko'ring";
+    }
+  })();
+})();
+</script>
+</body>
+</html>

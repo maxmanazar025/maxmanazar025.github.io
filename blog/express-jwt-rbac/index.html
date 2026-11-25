@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Express.js'da JWT va RBAC: CareTrack tajribasi | MS Blog</title>
+  <meta name="description" content="Express.js'da JWT autentifikatsiya va rollar asosidagi kirish: middleware zanjiri, 401 va 403 farqi, production'dan oldingi tekshiruvlar." />
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+</head>
+<body data-page="blog">
+<main class="page">
+  <div class="narrow">
+    <header class="article-head">
+      <a class="back" href="../"><span data-icon="arrow" style="transform:scaleX(-1);display:inline-flex"></span> Barcha maqolalar</a>
+      <p class="post-tag" style="margin-top:28px">Xavfsizlik</p>
+      <h1>Express.js'da JWT va RBAC: CareTrack tajribasi</h1>
+      <p class="lead">Tibbiy ma'lumotlar bilan ishlaydigan API'da "kim kirdi?" va "unga nima mumkin?" — ikki xil savol. Ularni ikki xil middleware hal qiladi.</p>
+      <div class="post-meta"><img src="https://avatars.githubusercontent.com/u/249048169?v=4" alt="" /><span>Maxmanazar Sultonov</span>·<span>25 Noy 2026</span>·<span>6 daq o'qish</span></div>
+    </header>
+    <div class="post-cover" style="margin-bottom:40px" id="cover"></div>
+
+    <article class="article">
+      <p>CareTrack Clinic — shifokorlar, bemorlar va kasalliklarni boshqaradigan REST API. Bu yerda xavfsizlik ikki qatlamdan iborat: <strong>autentifikatsiya</strong> (sen kimsan?) va <strong>avtorizatsiya</strong> (senga bu amal mumkinmi?). Ularni aralashtirmaslik — toza va tekshirsa bo'ladigan kodning kaliti.</p>
+
+      <h2>1. Login: bcrypt va qisqa muddatli token</h2>
+      <p>Login endpoint'i email va parolni oladi, parolni <code>bcrypt</code> hash bilan solishtiradi va muvaffaqiyatli bo'lsa 24 soatlik JWT qaytaradi. Token ichida faqat kerakli minimum: <code>id</code>, <code>email</code>, <code>role</code>, <code>full_name</code>. Parol hash'i hech qachon javobga kirmaydi.</p>
+      <p>Muhim detal: "email topilmadi" va "parol noto'g'ri" holatlarida <strong>bir xil</strong> javob qaytadi — <em>"Email yoki parol noto'g'ri"</em>. Aks holda hujumchi qaysi email'lar ro'yxatdan o'tganini bilib oladi.</p>
+
+      <h2>2. authenticateToken: 401</h2>
+      <pre><code><span class="tok-k">export function</span> <span class="tok-f">authenticateToken</span>(req, res, next) {
+  <span class="tok-k">const</span> token = req.headers[<span class="tok-s">'authorization'</span>]?.split(<span class="tok-s">' '</span>)[1]; <span class="tok-c">// "Bearer &lt;token&gt;"</span>
+  <span class="tok-k">if</span> (!token) <span class="tok-k">return</span> res.status(401).json({ error: <span class="tok-s">'Token topilmadi.'</span> });
+
+  jwt.verify(token, JWT_SECRET, (err, user) =&gt; {
+    <span class="tok-k">if</span> (err) <span class="tok-k">return</span> res.status(403).json({ error: <span class="tok-s">"Noto'g'ri yoki muddati o'tgan token."</span> });
+    req.user = user;   <span class="tok-c">// keyingi middleware'lar uchun</span>
+    next();
+  });
+}</code></pre>
+      <p>Bu middleware faqat bitta ishni qiladi: tokenni tekshiradi va <code>req.user</code>'ni to'ldiradi. Rollar haqida hech narsa bilmaydi.</p>
+
+      <h2>3. authorizeRoles: 403</h2>
+      <pre><code><span class="tok-k">export function</span> <span class="tok-f">authorizeRoles</span>(...allowedRoles) {
+  <span class="tok-k">return</span> (req, res, next) =&gt; {
+    <span class="tok-k">if</span> (!req.user) <span class="tok-k">return</span> res.status(401).json({ error: <span class="tok-s">'Avtorizatsiya talab qilinadi.'</span> });
+    <span class="tok-k">if</span> (!allowedRoles.includes(req.user.role))
+      <span class="tok-k">return</span> res.status(403).json({ error: <span class="tok-s">`Ruxsat etilmagan amal. Rolingiz: ${req.user.role}`</span> });
+    next();
+  };
+}</code></pre>
+      <p>Bu — <strong>higher-order function</strong>: rollar ro'yxatini oladi va middleware qaytaradi. Natijada route'lar o'qilishi oson, deklarativ bo'ladi:</p>
+      <pre><code>router.delete(<span class="tok-s">'/:id'</span>, authenticateToken, authorizeRoles(<span class="tok-s">'admin'</span>), deletePatient);
+router.get(<span class="tok-s">'/'</span>,       authenticateToken, authorizeRoles(<span class="tok-s">'admin'</span>, <span class="tok-s">'doctor'</span>), listPatients);</code></pre>
+
+      <h2>4. 401 va 403 — farqi nima?</h2>
+      <ul>
+        <li><strong>401 Unauthorized</strong> — "seni tanimayman". Token yo'q yoki yaroqsiz. Klient qayta login qilishi kerak.</li>
+        <li><strong>403 Forbidden</strong> — "seni taniyman, lekin bunga ruxsating yo'q". Qayta login yordam bermaydi.</li>
+      </ul>
+      <p>Frontend shu kodlarga qarab harakat qiladi: 401'da login sahifasiga yo'naltiradi, 403'da "ruxsat yo'q" xabarini ko'rsatadi. Shuning uchun muddati o'tgan token uchun ham <strong>401</strong> qaytarish to'g'riroq — keyingi versiyada shuni tuzataman.</p>
+
+      <h2>5. Ikki tilli xatolar</h2>
+      <p>Har bir xato javobida <code>error</code> (o'zbekcha) va <code>error_en</code> (inglizcha) maydonlari bor. Klinika xodimi o'z tilida o'qiydi, integratsiya qiluvchi dasturchi esa ingliz tilida.</p>
+
+      <h2>6. Production'dan oldingi checklist</h2>
+      <p>O'quv loyihasidan production'ga o'tishda o'zimga qo'ygan qoidalar:</p>
+      <ul>
+        <li><strong>Sir kalitga default qiymat bermang.</strong> <code>process.env.JWT_SECRET || '...'</code> — xavfli: env o'rnatilmay qolsa, server hamma biladigan kalit bilan ishlayveradi. To'g'risi — kalit yo'q bo'lsa, server ishga tushmasin.</li>
+        <li><strong><code>.env</code> faylini hech qachon commit qilmang</strong> — <code>.gitignore</code>'ga qo'shing va <code>.env.example</code> bering. Agar tasodifan push qilingan bo'lsa, kalitni almashtiring.</li>
+        <li>500 xatoda <code>err.message</code>'ni klientga qaytarmang — u ichki tuzilma haqida ma'lumot beradi. Log'ga yozing.</li>
+        <li>Login endpoint'iga rate limit qo'ying — parol tanlashga qarshi.</li>
+      </ul>
+      <blockquote>Xavfsizlik — bu funksiya emas, bu odat. Har bir route'ni yozganda ikki savol: "kim?" va "nimaga ruxsat?"</blockquote>
+      <p>Manba kodi: <a class="accent" href="https://github.com/maxmanazar025/caretrack_clinic" target="_blank" rel="noopener">github.com/maxmanazar025/caretrack_clinic</a></p>
+    </article>
+    <div class="article-foot">
+      <a class="btn btn-ghost" href="../llm-fallback-zanjiri/">← LLM fallback zanjiri</a>
+      <a class="btn btn-ghost" href="../">Barcha maqolalar →</a>
+    </div>
+  </div>
+</main>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/covers.js"></script>
+<script>document.getElementById("cover").innerHTML = MS_COVER("lock");</script>
+</body>
+</html>
