@@ -2,14 +2,30 @@
 <html lang="uz" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>Memora OS: bot, worker va bitta PostgreSQL | MS Blog</title>
   <meta name="description" content="Bitta foydalanuvchi uchun proaktiv AI yordamchi arxitekturasi: ikki mustaqil jarayon, Postgres orqali muvofiqlashuv va nega Redis kerak bo'lmadi." />
+  <link rel="canonical" href="https://maxmanazar025.github.io/blog/memora-os-arxitekturasi/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="ms.dev — Maxmanazar Sultonov" />
+  <meta property="og:locale" content="uz_UZ" />
+  <meta property="og:url" content="https://maxmanazar025.github.io/blog/memora-os-arxitekturasi/" />
+  <meta property="og:title" content="Memora OS: bot, worker va bitta PostgreSQL" />
+  <meta property="og:description" content="Bitta foydalanuvchi uchun proaktiv AI yordamchi arxitekturasi: ikki mustaqil jarayon, Postgres orqali muvofiqlashuv va nega Redis kerak bo'lmadi." />
+  <meta property="og:image" content="https://maxmanazar025.github.io/assets/img/og-card.jpg" />
+  <meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Maxmanazar Sultonov — Backend Developer" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="color-scheme" content="dark light" />
   <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="../../manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
-  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t)d.dataset.theme=t;var a=(localStorage.getItem("accentHex")||"").split(",");if(a.length===4){["--acc-d","--acc2-d","--acc-l","--acc2-l"].forEach(function(k,i){d.style.setProperty(k,a[i])});d.dataset.accent="1"}}catch(e){}if(d.dataset.theme==="light"){var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#faf8f5"}})();</script>
   <link rel="stylesheet" href="../../assets/css/main.css" />
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Memora OS: bot, worker va bitta PostgreSQL", "description": "Bitta foydalanuvchi uchun proaktiv AI yordamchi arxitekturasi: ikki mustaqil jarayon, Postgres orqali muvofiqlashuv va nega Redis kerak bo'lmadi.", "datePublished": "2026-11-25", "inLanguage": "uz", "url": "https://maxmanazar025.github.io/blog/memora-os-arxitekturasi/", "image": "https://maxmanazar025.github.io/assets/img/og-card.jpg", "author": {"@type": "Person", "name": "Maxmanazar Sultonov", "url": "https://maxmanazar025.github.io/"}}</script>
 </head>
 <body data-page="blog">
 <main class="page">

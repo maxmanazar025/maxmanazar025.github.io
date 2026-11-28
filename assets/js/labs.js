@@ -15,7 +15,7 @@
   $("#lab-count").textContent = LABS.length;
   const tags = ["All", ...new Set(LABS.flatMap(l => l.tags))];
   const T = $("#lab-tags");
-  T.innerHTML = tags.map((t, i) => `<button class="filter${i ? "" : " active"}" data-t="${t}">${t}</button>`).join("");
+  T.innerHTML = tags.map((t, i) => `<button class="filter${i ? "" : " active"}" aria-pressed="${!i}" data-t="${t}">${t}</button>`).join("");
   const groups = [...new Set(LABS.map(l => l.g))];
   $("#labs").innerHTML = groups.map(g => `<p class="label lab-group" style="justify-content:center">${g}</p><div class="lab-grid">${LABS.filter(l => l.g === g).map(l =>
     `<article class="card hov lab reveal" tabindex="0" role="button" data-id="${l.id}" data-tags="${l.tags.join("|")}">
@@ -23,15 +23,16 @@
       <div class="chips">${l.tags.map(t => `<i>${t}</i>`).join("")}</div></article>`).join("")}</div>`).join("");
   window.MS.observeReveal($("#labs"));
   T.addEventListener("click", e => { const b = e.target.closest(".filter"); if (!b) return;
-    T.querySelectorAll(".filter").forEach(x => x.classList.toggle("active", x === b));
+    T.querySelectorAll(".filter").forEach(x => { x.classList.toggle("active", x === b); x.setAttribute("aria-pressed", x === b); });
     document.querySelectorAll(".lab").forEach(l => l.classList.toggle("hide", b.dataset.t !== "All" && !l.dataset.tags.split("|").includes(b.dataset.t))); });
 
   const modal = $("#modal"), body = $("#m-body"); let cleanup = null;
   $("#m-x").innerHTML = window.MS_ICON("x");
-  const close = () => { modal.hidden = true; document.body.style.overflow = ""; if (cleanup) cleanup(); cleanup = null; };
+  let opener = null;
+  const close = () => { modal.hidden = true; document.documentElement.classList.remove("locked"); if (opener) opener.focus({ preventScroll: true }); if (cleanup) cleanup(); cleanup = null; };
   $("#m-x").onclick = close; modal.addEventListener("mousedown", e => { if (e.target === modal) close(); });
   addEventListener("keydown", e => { if (e.key === "Escape" && !modal.hidden) close(); });
-  const open = id => { const l = LABS.find(x => x.id === id); $("#m-title").textContent = l.t; body.innerHTML = ""; modal.hidden = false; document.body.style.overflow = "hidden"; cleanup = TOOLS[id](body) || null; };
+  const open = id => { const l = LABS.find(x => x.id === id); $("#m-title").textContent = l.t; body.innerHTML = ""; opener = document.activeElement; modal.hidden = false; document.documentElement.classList.add("locked"); setTimeout(() => $("#m-x").focus(), 30); cleanup = TOOLS[id](body) || null; };
   $("#labs").addEventListener("click", e => { const c = e.target.closest(".lab"); if (c) open(c.dataset.id); });
   $("#labs").addEventListener("keydown", e => { const c = e.target.closest(".lab"); if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); open(c.dataset.id); } });
 

@@ -1,0 +1,23 @@
+{
+  "name": "Maxmanazar Sultonov — ms.dev",
+  "short_name": "ms.dev",
+  "description": "Backend Developer portfoliosi: REST API, Telegram botlar va AI integratsiyalar.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "lang": "uz",
+  "icons": [
+    {
+      "src": "/assets/img/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/assets/img/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

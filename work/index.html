@@ -2,13 +2,28 @@
 <html lang="uz" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>Work | Maxmanazar Sultonov (MS)</title>
   <meta name="description" content="Loyihalar va arxitektura: Memora OS, CareTrack Clinic, Smart Planner Bot, Telegram Mini App'lar." />
+  <link rel="canonical" href="https://maxmanazar025.github.io/work/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ms.dev — Maxmanazar Sultonov" />
+  <meta property="og:locale" content="uz_UZ" />
+  <meta property="og:url" content="https://maxmanazar025.github.io/work/" />
+  <meta property="og:title" content="Work | Maxmanazar Sultonov (MS)" />
+  <meta property="og:description" content="Loyihalar va arxitektura: Memora OS, CareTrack Clinic, Smart Planner Bot, Telegram Mini App'lar." />
+  <meta property="og:image" content="https://maxmanazar025.github.io/assets/img/og-card.jpg" />
+  <meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Maxmanazar Sultonov — Backend Developer" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="color-scheme" content="dark light" />
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="../manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
-  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t)d.dataset.theme=t;var a=(localStorage.getItem("accentHex")||"").split(",");if(a.length===4){["--acc-d","--acc2-d","--acc-l","--acc2-l"].forEach(function(k,i){d.style.setProperty(k,a[i])});d.dataset.accent="1"}}catch(e){}if(d.dataset.theme==="light"){var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#faf8f5"}})();</script>
   <link rel="stylesheet" href="../assets/css/main.css" />
 </head>
 <body data-page="work">
@@ -20,7 +35,7 @@
       <p class="eyebrow c">Case study va arxitektura</p>
       <h1 class="h-xl">Tanlangan <span class="serif grad">Ishlar</span></h1>
       <p class="lead">AI yordamchilar, REST API'lar va Telegram avtomatlashtirish tizimlari — arxitektura qarorlari bilan.</p>
-      <div class="filters" role="tablist" id="filters"></div>
+      <div class="filters" id="filters" role="group" aria-label="Loyihalar filtri"></div>
     </header>
 
     <div class="projects" id="projects"></div>
@@ -86,7 +101,7 @@
   const CATS = [["all","Barcha tizimlar"],["ai","AI & Agentlar"],["api","API & Backend"],["bot","Bots & Mini Apps"]];
   const POS = [[16,18],[84,18],[8,50],[92,50],[16,82],[84,82],[50,10],[50,90]];
   const f = document.getElementById("filters");
-  f.innerHTML = CATS.map(([k, n], i) => `<button class="filter${i ? "" : " active"}" data-f="${k}">${n} <b>${k === "all" ? PROJ.length : PROJ.filter(p => p.cat === k).length}</b></button>`).join("");
+  f.innerHTML = CATS.map(([k, n], i) => `<button class="filter${i ? "" : " active"}" aria-pressed="${!i}" data-f="${k}">${n} <b>${k === "all" ? PROJ.length : PROJ.filter(p => p.cat === k).length}</b></button>`).join("");
   document.getElementById("projects").innerHTML = PROJ.map(p => {
     const nodes = p.nodes.map((n, i) => `<span class="node" style="left:${POS[i][0]}%;top:${POS[i][1]}%;transform:translate(-50%,-50%)">${n}</span>`).join("");
     const wires = p.nodes.map((n, i) => `<path d="M50 50 Q ${(50 + POS[i][0]) / 2} ${POS[i][1]} ${POS[i][0]} ${POS[i][1]}" vector-effect="non-scaling-stroke"/>`).join("");
@@ -105,9 +120,16 @@
   }).join("");
   window.MS.observeReveal(document.getElementById("projects"));
   // animate nodes
-  document.querySelectorAll(".arch-stage").forEach(st => { const n = st.querySelectorAll(".node"); let i = 0; setInterval(() => { n.forEach(x => x.classList.remove("lit")); n[i % n.length].classList.add("lit"); i++; }, 800); });
+  // animate only the diagrams that are on screen (saves battery on phones)
+  const lit = new Map();
+  const vis = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting && !lit.has(e.target)) { const n = e.target.querySelectorAll(".node"); let i = 0;
+      lit.set(e.target, setInterval(() => { n.forEach(x => x.classList.remove("lit")); n[i % n.length].classList.add("lit"); i++; }, 800)); }
+    else if (!e.isIntersecting && lit.has(e.target)) { clearInterval(lit.get(e.target)); lit.delete(e.target); }
+  }));
+  document.querySelectorAll(".arch-stage").forEach(st => vis.observe(st));
   f.addEventListener("click", e => { const b = e.target.closest(".filter"); if (!b) return;
-    f.querySelectorAll(".filter").forEach(x => x.classList.toggle("active", x === b));
+    f.querySelectorAll(".filter").forEach(x => { x.classList.toggle("active", x === b); x.setAttribute("aria-pressed", x === b); });
     document.querySelectorAll(".project").forEach(p => p.classList.toggle("hide", b.dataset.f !== "all" && p.dataset.cat !== b.dataset.f)); });
 
   // contributions heatmap (public API, no token)

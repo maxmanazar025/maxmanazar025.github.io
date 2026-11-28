@@ -2,13 +2,28 @@
 <html lang="uz" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>Contact | Maxmanazar Sultonov (MS)</title>
   <meta name="description" content="Maxmanazar Sultonov bilan bog'lanish: xabar yuborish, Telegram, email va tez-tez so'raladigan savollar." />
+  <link rel="canonical" href="https://maxmanazar025.github.io/contact/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ms.dev — Maxmanazar Sultonov" />
+  <meta property="og:locale" content="uz_UZ" />
+  <meta property="og:url" content="https://maxmanazar025.github.io/contact/" />
+  <meta property="og:title" content="Contact | Maxmanazar Sultonov (MS)" />
+  <meta property="og:description" content="Maxmanazar Sultonov bilan bog'lanish: xabar yuborish, Telegram, email va tez-tez so'raladigan savollar." />
+  <meta property="og:image" content="https://maxmanazar025.github.io/assets/img/og-card.jpg" />
+  <meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Maxmanazar Sultonov — Backend Developer" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="color-scheme" content="dark light" />
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="../manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
-  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t)d.dataset.theme=t;var a=(localStorage.getItem("accentHex")||"").split(",");if(a.length===4){["--acc-d","--acc2-d","--acc-l","--acc2-l"].forEach(function(k,i){d.style.setProperty(k,a[i])});d.dataset.accent="1"}}catch(e){}if(d.dataset.theme==="light"){var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#faf8f5"}})();</script>
   <link rel="stylesheet" href="../assets/css/main.css" />
 </head>
 <body data-page="contact">
@@ -39,8 +54,11 @@
         <label class="field"><span>MAVZU</span><input class="inp" name="subject" placeholder="So'rovingizning qisqacha mavzusi" /></label>
         <label class="field"><span>XABAR <em id="cnt">0 / 500</em></span><textarea class="ta" name="message" rows="6" maxlength="500" required placeholder="Loyiha, muddat yoki muhandislik muammosi haqida yozing..." style="font-family:var(--font)"></textarea></label>
         <div class="form-foot">
-          <button class="btn btn-solid" type="submit">Xabarni yuborish <span data-icon="arrow"></span></button>
-          <span class="small muted">To'g'ridan-to'g'ri email? <a href="mailto:maxmanazar025@gmail.com">maxmanazar025@gmail.com ↗</a></span>
+          <div class="row-c" style="margin:0;justify-content:flex-start">
+            <button class="btn btn-solid" type="submit">Email orqali yuborish <span data-icon="arrow"></span></button>
+            <button class="btn btn-ghost" type="button" id="tg-send"><span data-icon="telegram"></span> Telegram orqali</button>
+          </div>
+          <span class="small muted">Pochta ilovasi ochilmasa — matn avtomatik nusxalanadi. Email: <a href="mailto:maxmanazar025@gmail.com">maxmanazar025@gmail.com</a></span>
         </div>
       </form>
 
@@ -96,7 +114,7 @@
           <p class="mono small muted"><span data-gh="repo">maxmanazar025</span> · <span data-gh="sha">—</span></p>
           <div class="gh-mini"><div><b data-gh="repos">4</b><small>PUBLIC REPOS</small></div><div><b data-gh="followers">0</b><small>FOLLOWERS</small></div></div>
         </a>
-        <button class="card hov reveal" style="text-align:left" data-shell><span class="label">Terminal</span><h3 class="big-t">Terminal<br /><span class="serif grad">orqali kiring</span></h3><p class="dim small">neofetch, ls, cat about.txt — portfolio'ni CLI'da ko'ring.</p><span class="btn btn-dark">Ochish <span data-icon="term"></span></span></button>
+        <a class="card hov reveal" href="#terminal" role="button" data-shell><span class="label">Terminal</span><h3 class="big-t">Terminal<br /><span class="serif grad">orqali kiring</span></h3><p class="dim small">neofetch, ls, cat about.txt — portfolio'ni CLI'da ko'ring.</p><span class="btn btn-dark">Ochish <span data-icon="term"></span></span></a>
       </div>
     </section>
   </div>
@@ -106,21 +124,31 @@
 (() => {
   const f = document.getElementById("form"), cnt = document.getElementById("cnt");
   f.message.addEventListener("input", () => cnt.textContent = f.message.value.length + " / 500");
-  f.addEventListener("submit", e => {
-    e.preventDefault();
-    if (!f.reportValidity()) return;
+  const compose = () => {
     const d = new FormData(f);
     const subject = `[${d.get("topic")}] ${d.get("subject") || "Portfolio orqali xabar"}`;
     const body = `${d.get("message")}\n\n— ${d.get("name")} (${d.get("email")})`;
+    return { subject, body };
+  };
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    if (!f.reportValidity()) return;
+    const { subject, body } = compose();
+    // copy first: if no mail app is configured on the phone, the text is not lost
+    MS.copy(`${subject}\n\n${body}`, "Xabar nusxalandi ✓ Pochta ilovasi ochilmoqda...");
     location.href = `mailto:maxmanazar025@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    MS.toast("Pochta ilovasi ochilmoqda...");
+  });
+  document.getElementById("tg-send").addEventListener("click", () => {
+    if (!f.reportValidity()) return;
+    const { subject, body } = compose();
+    MS.copy(`${subject}\n\n${body}`, "Xabar nusxalandi ✓ Telegram'da joylashtiring").then(() => window.open("https://t.me/maxmanazarbek", "_blank", "noopener"));
   });
   const months = ["Yan","Fev","Mar","Apr","May","Iyun","Iyul","Avg","Sen","Okt","Noy","Dek"], days = ["Yak","Dush","Sesh","Chor","Pay","Jum","Shan"];
   const tick = () => { const n = MS.tashkentNow(), h = n.getHours();
     document.getElementById("clock").textContent = n.toLocaleTimeString("en-GB");
     document.getElementById("dp").textContent = h < 5 ? "Tun" : h < 12 ? "Ertalab" : h < 17 ? "Kunduzi" : h < 21 ? "Kechqurun" : "Tun";
     document.getElementById("dl").textContent = `${days[n.getDay()]}, ${n.getDate()} ${months[n.getMonth()]} ${n.getFullYear()} · UTC+5 · Toshkent, UZ`; };
-  tick(); setInterval(tick, 1000);
+  tick(); setInterval(() => { if (!document.hidden) tick(); }, 1000);
 })();
 </script>
 </body>

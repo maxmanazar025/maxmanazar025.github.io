@@ -2,14 +2,28 @@
 <html lang="uz" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>About | Maxmanazar Sultonov (MS)</title>
   <meta name="description" content="Maxmanazar Sultonov haqida: hikoya, release history, texnik kompetensiyalar va qiziqishlar." />
-  <meta property="og:image" content="https://avatars.githubusercontent.com/u/249048169?v=4" />
+  <link rel="canonical" href="https://maxmanazar025.github.io/about/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ms.dev — Maxmanazar Sultonov" />
+  <meta property="og:locale" content="uz_UZ" />
+  <meta property="og:url" content="https://maxmanazar025.github.io/about/" />
+  <meta property="og:title" content="About | Maxmanazar Sultonov (MS)" />
+  <meta property="og:description" content="Maxmanazar Sultonov haqida: hikoya, release history, texnik kompetensiyalar va qiziqishlar." />
+  <meta property="og:image" content="https://maxmanazar025.github.io/assets/img/og-card.jpg" />
+  <meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Maxmanazar Sultonov — Backend Developer" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="color-scheme" content="dark light" />
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="../manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
-  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t)d.dataset.theme=t;var a=(localStorage.getItem("accentHex")||"").split(",");if(a.length===4){["--acc-d","--acc2-d","--acc-l","--acc2-l"].forEach(function(k,i){d.style.setProperty(k,a[i])});d.dataset.accent="1"}}catch(e){}if(d.dataset.theme==="light"){var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#faf8f5"}})();</script>
   <link rel="stylesheet" href="../assets/css/main.css" />
 </head>
 <body data-page="about">
@@ -26,14 +40,18 @@
         <p>Asosiy yo'nalishim — <strong>Node.js / Express</strong> va <strong>Python</strong> orqali REST API'lar, <strong>PostgreSQL</strong> sxema dizayni, <strong>JWT</strong> autentifikatsiya va rollar asosidagi kirish nazorati. Telegram botlar va Mini App'lar yaratishni alohida yaxshi ko'raman: aiogram, grammY, Prisma, Supabase va Docker bilan.</p>
         <p>Bugun fokusim — AI'ni amaliy vositaga aylantirish. <strong>Memora OS</strong> shunday loyiha: ikki jarayonli (bot + worker) arxitektura, bitta PostgreSQL, provayderlar o'rtasida avtomatik o'tadigan LLM zanjiri va Google Calendar / Tasks integratsiyasi. Maqsadim oddiy: <span class="accent">jim ishlaydigan, oson kengayadigan va production haqiqatiga bardosh beradigan</span> dasturlar yaratish.</p>
       </div>
-      <div class="polaroid-wrap reveal">
-        <div class="polaroid p-back"></div><div class="polaroid p-mid"></div>
+      <div class="polaroid-wrap reveal" tabindex="0" role="button" aria-pressed="false" aria-label="Rasmlarni yoyish">
+        <div class="polaroid p-back" aria-hidden="true"><span class="p-note">ms.dev<br />2026</span></div>
+        <figure class="polaroid p-mid">
+          <img src="https://avatars.githubusercontent.com/u/249048169?v=4" alt="Maxmanazar Sultonov — GitHub avatari" loading="lazy" width="460" height="460" />
+          <figcaption>github.com</figcaption>
+        </figure>
         <figure class="polaroid p-front">
-          <img src="https://avatars.githubusercontent.com/u/249048169?v=4" alt="Maxmanazar Sultonov" />
-          <figcaption>@maxmanazar025</figcaption>
+          <img src="../assets/img/me-pdp.jpg" alt="Maxmanazar Sultonov PDP University binosi oldida" width="720" height="863" fetchpriority="high" />
+          <figcaption>@PDP University</figcaption>
         </figure>
         <span class="ptag t1">REST API</span><span class="ptag t2">Telegram Bots</span>
-        <p class="hint">Rasm ustiga olib boring</p>
+        <p class="hint"><span class="hint-hover">Rasm ustiga olib boring</span><span class="hint-touch">Rasmga bosing</span></p>
       </div>
     </div>
 
@@ -157,8 +175,12 @@
 <script>
   (() => {
     const start = new Date("2025-12-11T06:13:58Z"), el = document.getElementById("gh-age");
-    const tick = () => el.textContent = ((Date.now() - start) / 864e5).toFixed(6) + " kun";
-    tick(); setInterval(tick, 80);
+    const tick = () => { if (!document.hidden) el.textContent = ((Date.now() - start) / 864e5).toFixed(4) + " kun"; };
+    tick(); setInterval(tick, 1000);
+    const pw = document.querySelector(".polaroid-wrap");
+    const fan = () => { const o = pw.classList.toggle("fan"); pw.setAttribute("aria-pressed", o); };
+    pw.addEventListener("click", fan);
+    pw.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fan(); } });
     const T = [["Node.js","nodedotjs"],["Express.js","express"],["Python","python"],["FastAPI","fastapi"],["PostgreSQL","postgresql"],["Supabase","supabase"],["Prisma","prisma"],["SQLAlchemy","sqlalchemy"],["Docker","docker"],["Cloudflare Workers","cloudflareworkers"],["Git","git"],["GitHub","github"],["Linux","linux"],["Bash","gnubash"],["JavaScript","javascript"],["React","react"],["Telegram","telegram"],["Google Gemini","googlegemini"],["Google Cloud","googlecloud"],["JSON Web Tokens","jsonwebtokens"],["Postman","postman"],["VS Code","vscodium"],["HTML5","html5"],["CSS","css"]];
     document.getElementById("tech-cloud").innerHTML = T.map(([n, s]) => `<span><img src="https://cdn.simpleicons.org/${s}/a8a29e" alt="" loading="lazy" onerror="this.remove()" />${n}</span>`).join("");
   })();

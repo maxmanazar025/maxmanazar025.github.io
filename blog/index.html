@@ -2,13 +2,28 @@
 <html lang="uz" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>Blog | Maxmanazar Sultonov (MS)</title>
   <meta name="description" content="Field Notes: backend arxitektura, Telegram botlar, LLM integratsiya va API xavfsizligi bo'yicha maqolalar." />
+  <link rel="canonical" href="https://maxmanazar025.github.io/blog/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ms.dev — Maxmanazar Sultonov" />
+  <meta property="og:locale" content="uz_UZ" />
+  <meta property="og:url" content="https://maxmanazar025.github.io/blog/" />
+  <meta property="og:title" content="Blog | Maxmanazar Sultonov (MS)" />
+  <meta property="og:description" content="Field Notes: backend arxitektura, Telegram botlar, LLM integratsiya va API xavfsizligi bo'yicha maqolalar." />
+  <meta property="og:image" content="https://maxmanazar025.github.io/assets/img/og-card.jpg" />
+  <meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Maxmanazar Sultonov — Backend Developer" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="color-scheme" content="dark light" />
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="../manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
-  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;var a=localStorage.getItem("accentHex");if(a){a=a.split(",");document.documentElement.style.setProperty("--accent",a[0]);document.documentElement.style.setProperty("--accent-2",a[1]);document.documentElement.dataset.accent="1"}}catch(e){}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <script>(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("theme");if(t)d.dataset.theme=t;var a=(localStorage.getItem("accentHex")||"").split(",");if(a.length===4){["--acc-d","--acc2-d","--acc-l","--acc2-l"].forEach(function(k,i){d.style.setProperty(k,a[i])});d.dataset.accent="1"}}catch(e){}if(d.dataset.theme==="light"){var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#faf8f5"}})();</script>
   <link rel="stylesheet" href="../assets/css/main.css" />
 </head>
 <body data-page="blog">
@@ -24,7 +39,7 @@
 
     <div class="blog-tools">
       <div class="filters" id="tags"></div>
-      <label class="search"><span data-icon="search"></span><input id="q" placeholder="Maqola qidirish..." aria-label="Maqola qidirish" /><kbd>/</kbd></label>
+      <label class="search"><span data-icon="search"></span><input id="q" type="search" placeholder="Maqola qidirish..." aria-label="Maqola qidirish" autocomplete="off" enterkeyhint="search" /><kbd>/</kbd></label>
     </div>
 
     <div class="featured reveal" id="featured"></div>
@@ -57,7 +72,7 @@
   const tags = ["Barchasi", ...new Set(POSTS.map(p => p.tag))];
   let tag = "Barchasi", q = "";
   const T = document.getElementById("tags");
-  T.innerHTML = tags.map((t, i) => `<button class="filter${i ? "" : " active"}" data-t="${t}">${t}</button>`).join("");
+  T.innerHTML = tags.map((t, i) => `<button class="filter${i ? "" : " active"}" aria-pressed="${!i}" data-t="${t}">${t}</button>`).join("");
   const render = () => {
     const list = POSTS.filter(p => (tag === "Barchasi" || p.tag === tag) && (p.t + p.d + p.tag).toLowerCase().includes(q));
     const [f, ...rest] = list;
@@ -67,7 +82,7 @@
     document.getElementById("grid").innerHTML = list.map(p => `<a class="post-card reveal in" href="${p.slug}/">${cover(p)}<span class="post-tag">${p.tag}</span><h3>${p.t}</h3><p>${p.d}</p>${meta(p)}</a>`).join("");
     document.getElementById("empty").style.display = list.length ? "none" : "block";
   };
-  T.addEventListener("click", e => { const b = e.target.closest(".filter"); if (!b) return; tag = b.dataset.t; T.querySelectorAll(".filter").forEach(x => x.classList.toggle("active", x === b)); render(); });
+  T.addEventListener("click", e => { const b = e.target.closest(".filter"); if (!b) return; tag = b.dataset.t; T.querySelectorAll(".filter").forEach(x => { x.classList.toggle("active", x === b); x.setAttribute("aria-pressed", x === b); }); render(); });
   const qi = document.getElementById("q");
   qi.addEventListener("input", () => { q = qi.value.trim().toLowerCase(); render(); });
   addEventListener("keydown", e => { if (e.key === "/" && document.activeElement.tagName !== "INPUT") { e.preventDefault(); qi.focus(); } });

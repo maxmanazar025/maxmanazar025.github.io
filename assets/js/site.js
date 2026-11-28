@@ -101,32 +101,72 @@
   ];
   window.MS.POSTS = POSTS;
 
+  /* ---------------- safe storage (private mode / blocked storage must not break the site) ---------------- */
+  const store = {
+    get: (k, s = localStorage) => { try { return s.getItem(k); } catch { return null; } },
+    set: (k, v, s = localStorage) => { try { s.setItem(k, v); } catch { /* ignore */ } },
+  };
+  const ss = { get: k => { try { return sessionStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch { /* ignore */ } } };
+  const TOUCH = matchMedia("(hover: none)").matches;
+  if (TOUCH) root.classList.add("touch");
+
   /* ---------------- layout ---------------- */
+  const LABEL = { home: "Home", about: "About", experience: "Experience", work: "Work", blog: "Blog" };
   const navLinks = PAGES.filter(x => x.id !== "contact").map(x =>
-    `<a href="${url(x.p)}" class="nav-link${PAGE === x.id ? " active" : ""}">${x.id === "home" ? "Home" : x.id === "about" ? "About" : x.id === "experience" ? "Experience" : x.id === "work" ? "Work" : "Blog"}</a>`).join("");
+    `<a href="${url(x.p)}" class="nav-link${PAGE === x.id ? " active" : ""}"${PAGE === x.id ? ' aria-current="page"' : ""}>${LABEL[x.id]}</a>`).join("");
   const moreActive = MORE.some(m => m.id === PAGE);
   const moreMenu = MORE.map(m => m.big
     ? `<a class="big" href="${url(m.p)}">${icon(m.ic)}<b>${m.t}</b><small>${m.d}</small></a>`
     : `<a class="sm" href="${url(m.p)}">${icon(m.ic)}<span><b>${m.t}</b></span></a>`).join("");
+  const TABS = [["home", "", "home", "Home"], ["work", "work/", "layers", "Work"], ["blog", "blog/", "pen", "Blog"], ["contact", "contact/", "mail", "Aloqa"]];
+  const sheetLinks = [...PAGES, ...MORE].map((x, i) =>
+    `<a href="${url(x.p)}" class="sheet-link${PAGE === x.id ? " active" : ""}" style="--i:${i}"${PAGE === x.id ? ' aria-current="page"' : ""}><span class="sheet-ic" style="--c:${x.c}">${icon(x.ic)}</span><span><b>${x.t}</b><small>${x.d}</small></span>${icon("arrow", "i go")}</a>`).join("");
   document.body.insertAdjacentHTML("afterbegin", `
     <a class="skip" href="#main">Asosiy kontentga o'tish</a>
     <div class="bg-glow" aria-hidden="true"></div><div class="bg-dots" aria-hidden="true"></div>
     <div class="scroll-progress" aria-hidden="true"></div>
-    <a href="${url("")}" class="logo" aria-label="Bosh sahifa">m<span>s</span></a>
-    <nav class="nav" aria-label="Asosiy menyu">
-      <div class="nav-pill">
-        ${navLinks}
-        <div class="more${moreActive ? " is-active" : ""}">
-          <button class="nav-link${moreActive ? " active" : ""}" aria-expanded="false" aria-haspopup="true">More ${icon("chev", "i chev")}</button>
-          <div class="more-menu">${moreMenu}</div>
+    <header class="topbar">
+      <a href="${url("")}" class="logo" aria-label="Bosh sahifa">m<span>s</span></a>
+      <nav class="nav" aria-label="Asosiy menyu">
+        <div class="nav-pill">
+          ${navLinks}
+          <div class="more${moreActive ? " is-active" : ""}">
+            <button class="nav-link${moreActive ? " active" : ""}" aria-expanded="false" aria-haspopup="true">More ${icon("chev", "i chev")}</button>
+            <div class="more-menu">${moreMenu}</div>
+          </div>
+          <span class="nav-sep"></span>
+          <button class="icon-btn theme-toggle" aria-label="Mavzuni almashtirish">${icon("moon", "i i-moon")}${icon("sun", "i i-sun")}</button>
+          <a href="${url("contact/")}" class="nav-cta${PAGE === "contact" ? " active" : ""}">Contact</a>
         </div>
-        <span class="nav-sep"></span>
-        <button class="icon-btn theme-toggle" aria-label="Mavzuni almashtirish">${icon("moon", "i i-moon")}${icon("sun", "i i-sun")}</button>
-        <a href="${url("contact/")}" class="nav-cta${PAGE === "contact" ? " active" : ""}">Contact</a>
+      </nav>
+      <div class="top-actions">
+        <button class="icon-btn top-btn theme-toggle" aria-label="Mavzuni almashtirish">${icon("moon", "i i-moon")}${icon("sun", "i i-sun")}</button>
+        <button class="icon-btn top-btn cmd-btn" aria-label="Buyruqlar paneli (Ctrl+K)" title="Ctrl + K">${icon("cmd")}</button>
+        <button class="icon-btn top-btn burger" aria-label="Menyuni ochish" aria-expanded="false" aria-controls="sheet"><span class="burger-lines" aria-hidden="true"><i></i><i></i></span></button>
       </div>
-      <button class="icon-btn burger" aria-label="Menyu" aria-expanded="false">${icon("menu")}</button>
+    </header>
+    <nav class="tabbar" aria-label="Tezkor menyu">
+      ${TABS.map(([id, p, ic, t]) => `<a href="${url(p)}" class="tab${PAGE === id ? " active" : ""}"${PAGE === id ? ' aria-current="page"' : ""}>${icon(ic)}<span>${t}</span></a>`).join("")}
+      <button class="tab tab-menu" aria-label="Barcha bo'limlar" aria-expanded="false" aria-controls="sheet">${icon("menu")}<span>Menyu</span></button>
     </nav>
-    <button class="cmd-btn" aria-label="Buyruqlar paneli (Ctrl+K)" title="Ctrl + K">${icon("cmd")}</button>`);
+    <div class="sheet" id="sheet" hidden>
+      <div class="sheet-panel" role="dialog" aria-modal="true" aria-label="Menyu">
+        <div class="sheet-head"><span class="mono small muted">// navigatsiya</span><button class="icon-btn sheet-x" aria-label="Yopish">${icon("x")}</button></div>
+        <div class="sheet-links">${sheetLinks}</div>
+        <div class="sheet-tools">
+          <button class="sheet-tool theme-toggle">${icon("moon", "i i-moon")}${icon("sun", "i i-sun")}<span>Mavzu</span></button>
+          <button class="sheet-tool accent-btn">${icon("palette")}<span>Rang</span></button>
+          <button class="sheet-tool" data-open-cmd>${icon("search")}<span>Qidiruv</span></button>
+          <button class="sheet-tool" data-shell>${icon("term")}<span>Terminal</span></button>
+        </div>
+        <div class="sheet-soc">
+          <a href="${ME.github}" target="_blank" rel="noopener" aria-label="GitHub">${icon("github")}</a>
+          <a href="${ME.telegram}" target="_blank" rel="noopener" aria-label="Telegram">${icon("telegram")}</a>
+          <a href="${ME.linkedin}" target="_blank" rel="noopener" aria-label="LinkedIn">${icon("linkedin")}</a>
+          <a href="mailto:${ME.email}" aria-label="Email">${icon("mail")}</a>
+        </div>
+      </div>
+    </div>`);
 
   document.body.insertAdjacentHTML("beforeend", `
     <footer class="footer"><div class="container">
@@ -150,53 +190,112 @@
     </div>
     <div class="cmdk" hidden>
       <div class="cmdk-box" role="dialog" aria-modal="true" aria-label="Buyruqlar paneli">
-        <div class="cmdk-top">${icon("search")}<input class="cmdk-input" placeholder="Sahifa, loyiha, maqola qidiring yoki 'shell' yozing..." aria-label="Qidiruv" /><button class="icon-btn cmdk-x" aria-label="Yopish">${icon("x")}</button></div>
-        <div class="cmdk-body"><ul class="cmdk-list" role="listbox"></ul><aside class="cmdk-prev"></aside></div>
-        <div class="cmdk-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> tanlash · <kbd>Enter</kbd> ochish · sichqoncha bilan bosing</span><span><kbd>Esc</kbd> yopish</span></div>
+        <span class="grab" aria-hidden="true"></span>
+        <div class="cmdk-top">${icon("search")}<input class="cmdk-input" placeholder="Sahifa, loyiha, maqola yoki 'shell'..." aria-label="Qidiruv" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" /><button class="icon-btn cmdk-x" aria-label="Yopish">${icon("x")}</button></div>
+        <div class="cmdk-body"><ul class="cmdk-list" role="listbox" aria-label="Natijalar"></ul><aside class="cmdk-prev"></aside></div>
+        <div class="cmdk-foot"><span class="hint-hover"><kbd>↑</kbd> <kbd>↓</kbd> tanlash · <kbd>Enter</kbd> ochish</span><span class="hint-hover"><kbd>Esc</kbd> yopish</span><span class="hint-touch">Bosing — ochiladi · pastga suring — yopiladi</span></div>
       </div>
     </div>
     <div class="shell" hidden>
       <div class="shell-box" role="dialog" aria-modal="true" aria-label="Interaktiv terminal">
-        <div class="shell-h"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">maxmanazar — zsh — 80×24</span><button class="shell-x" aria-label="Yopish">${icon("x")}</button></div>
+        <div class="shell-h"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">maxmanazar — zsh</span><button class="shell-x" aria-label="Yopish">${icon("x")}</button></div>
         <div class="shell-out" aria-live="polite"></div>
-        <label class="shell-in"><span class="p">max@ms-dev:~$</span><input autocomplete="off" spellcheck="false" aria-label="Buyruq" /></label>
+        <div class="shell-chips" aria-label="Tezkor buyruqlar">${["help", "neofetch", "ls", "cat about.txt", "projects", "skills", "social", "clear"].map(c => `<button data-run="${c}">${c}</button>`).join("")}</div>
+        <label class="shell-in"><span class="p">max@ms-dev:~$</span><input autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="Buyruq" /></label>
       </div>
     </div>
-    <div class="toast" role="status"></div>`);
+    <div class="toast" role="status" aria-live="polite"></div>`);
   const main = $("main"); if (main && !main.id) main.id = "main";
 
+  /* ---------------- scroll lock + focus handling for overlays ---------------- */
+  let locks = 0;
+  const lock = on => { locks = Math.max(0, locks + (on ? 1 : -1)); root.classList.toggle("locked", locks > 0); };
+  const trap = (box, e) => {
+    if (e.key !== "Tab") return;
+    const f = $$('a[href],button:not([disabled]),input,textarea,[tabindex]:not([tabindex="-1"])', box).filter(x => x.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
+
   /* ---------------- theme & accent ---------------- */
+  // d = dark-theme colors, l = darker variants that keep WCAG AA contrast on the light background
   const ACCENTS = [
-    { n: "Amber", a: "#f59e0b", b: "#fb923c" }, { n: "Pink", a: "#ec4899", b: "#f472b6" },
-    { n: "Emerald", a: "#10b981", b: "#34d399" }, { n: "Sky", a: "#38bdf8", b: "#60a5fa" }, { n: "Violet", a: "#a78bfa", b: "#c084fc" },
+    { n: "Amber", d: ["#f59e0b", "#fb923c"], l: ["#b45309", "#c2410c"] },
+    { n: "Pink", d: ["#ec4899", "#f472b6"], l: ["#be185d", "#db2777"] },
+    { n: "Emerald", d: ["#10b981", "#34d399"], l: ["#047857", "#059669"] },
+    { n: "Sky", d: ["#38bdf8", "#60a5fa"], l: ["#0369a1", "#1d4ed8"] },
+    { n: "Violet", d: ["#a78bfa", "#c084fc"], l: ["#6d28d9", "#7e22ce"] },
   ];
   const setAccent = i => {
-    const x = ACCENTS[i]; root.style.setProperty("--accent", x.a); root.style.setProperty("--accent-2", x.b);
-    root.dataset.accent = x.n; localStorage.setItem("accent", i); localStorage.setItem("accentHex", x.a + "," + x.b);
+    const x = ACCENTS[i], v = [x.d[0], x.d[1], x.l[0], x.l[1]];
+    ["--acc-d", "--acc2-d", "--acc-l", "--acc2-l"].forEach((k, j) => root.style.setProperty(k, v[j]));
+    root.dataset.accent = x.n; store.set("accent", i); store.set("accentHex", v.join(","));
   };
-  let acc = +(localStorage.getItem("accent") || 0); if (acc) setAccent(acc);
+  let acc = +(store.get("accent") || 0) % ACCENTS.length; if (acc) setAccent(acc);
   const cycleAccent = () => { acc = (acc + 1) % ACCENTS.length; setAccent(acc); toast(`Rang: ${ACCENTS[acc].n}`); };
-  $(".accent-btn").addEventListener("click", cycleAccent);
-  const toggleTheme = () => { root.dataset.theme = root.dataset.theme === "light" ? "dark" : "light"; localStorage.setItem("theme", root.dataset.theme); };
-  $(".theme-toggle").addEventListener("click", toggleTheme);
+  $$(".accent-btn").forEach(b => b.addEventListener("click", cycleAccent));
+  const themeMeta = $('meta[name="theme-color"]');
+  const toggleTheme = () => {
+    const go = () => { root.dataset.theme = root.dataset.theme === "light" ? "dark" : "light"; store.set("theme", root.dataset.theme); if (themeMeta) themeMeta.content = root.dataset.theme === "light" ? "#faf8f5" : "#050505"; };
+    document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches ? document.startViewTransition(go) : go();
+  };
+  $$(".theme-toggle").forEach(b => b.addEventListener("click", toggleTheme));
 
   /* ---------------- toast / copy ---------------- */
-  function toast(msg) { const t = $(".toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2200); }
-  const copy = (txt, msg = "Nusxalandi ✓") => navigator.clipboard.writeText(txt).then(() => toast(msg), () => toast(txt));
-  window.MS.toast = toast; window.MS.copy = copy;
+  function toast(msg) { const t = $(".toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2400); }
+  const copy = (txt, msg = "Nusxalandi ✓") => {
+    const fallback = () => { const ta = Object.assign(document.createElement("textarea"), { value: txt }); ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand("copy"); } catch { /* ignore */ } ta.remove(); toast(ok ? msg : txt); };
+    return navigator.clipboard ? navigator.clipboard.writeText(txt).then(() => toast(msg), fallback) : (fallback(), Promise.resolve());
+  };
+  window.MS.toast = toast; window.MS.copy = copy; window.MS.store = store;
   document.addEventListener("click", e => { const b = e.target.closest("[data-copy]"); if (b) { e.preventDefault(); copy(b.dataset.copy, b.dataset.msg || "Nusxalandi ✓"); } });
 
-  /* ---------------- nav: more + mobile ---------------- */
-  const more = $(".more"), moreBtn = $(".more > button"), nav = $(".nav"), burger = $(".burger");
+  /* ---------------- nav: desktop "More" + mobile sheet ---------------- */
+  const more = $(".more"), moreBtn = $(".more > button"), sheet = $(".sheet"), sheetBtns = $$(".burger, .tab-menu");
   moreBtn.addEventListener("click", e => { e.stopPropagation(); const o = more.classList.toggle("open"); moreBtn.setAttribute("aria-expanded", o); });
-  document.addEventListener("click", e => { if (!more.contains(e.target)) { more.classList.remove("open"); moreBtn.setAttribute("aria-expanded", false); } if (!nav.contains(e.target)) nav.classList.remove("open"); });
-  burger.addEventListener("click", e => { e.stopPropagation(); const o = nav.classList.toggle("open"); burger.setAttribute("aria-expanded", o); });
+  document.addEventListener("click", e => { if (!more.contains(e.target)) { more.classList.remove("open"); moreBtn.setAttribute("aria-expanded", false); } });
+  let sheetReturn = null;
+  const openSheet = () => {
+    if (!sheet.hidden) return;
+    sheetReturn = document.activeElement; sheet.hidden = false; lock(true);
+    requestAnimationFrame(() => sheet.classList.add("open"));
+    sheetBtns.forEach(b => b.setAttribute("aria-expanded", true)); root.classList.add("sheet-open");
+    setTimeout(() => $(".sheet-link.active, .sheet-link", sheet).focus({ preventScroll: true }), 60);
+  };
+  const closeSheet = (restore = true) => {
+    if (sheet.hidden) return;
+    sheet.classList.remove("open"); sheetBtns.forEach(b => b.setAttribute("aria-expanded", false)); root.classList.remove("sheet-open"); lock(false);
+    setTimeout(() => { sheet.hidden = true; }, 280);
+    if (restore && sheetReturn) sheetReturn.focus({ preventScroll: true });
+  };
+  sheetBtns.forEach(b => b.addEventListener("click", e => { e.stopPropagation(); sheet.hidden ? openSheet() : closeSheet(); }));
+  $(".sheet-x").addEventListener("click", () => closeSheet());
+  sheet.addEventListener("click", e => { if (e.target === sheet) closeSheet(); });
+  sheet.addEventListener("keydown", e => trap(sheet, e));
+  $$("[data-open-cmd]").forEach(b => b.addEventListener("click", () => { closeSheet(false); setTimeout(() => openCmd(), 120); }));
 
-  /* ---------------- scroll ---------------- */
+  /* ---------------- scroll: progress, header state, to-top ---------------- */
   const prog = $(".scroll-progress"), toTop = $(".to-top");
-  const onScroll = () => { const h = root.scrollHeight - innerHeight; prog.style.width = (h > 0 ? scrollY / h * 100 : 0) + "%"; toTop.classList.toggle("show", scrollY > 500); };
-  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  let lastY = scrollY, ticking = false;
+  const onScroll = () => {
+    ticking = false;
+    const y = scrollY, h = root.scrollHeight - innerHeight;
+    prog.style.transform = `scaleX(${h > 0 ? Math.min(y / h, 1) : 0})`;
+    toTop.classList.toggle("show", y > 500);
+    root.classList.toggle("scrolled", y > 12);
+    if (Math.abs(y - lastY) > 6) { root.classList.toggle("hide-top", y > lastY && y > 160 && sheet.hidden); lastY = y; }
+  };
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true }); onScroll();
   toTop.addEventListener("click", () => scrollTo({ top: 0, behavior: "smooth" }));
+
+  /* ---------------- pointer spotlight on cards (mouse only) ---------------- */
+  if (!TOUCH) document.addEventListener("pointermove", e => {
+    const c = e.target.closest && e.target.closest(".card, .arch, .use, .stat, .interest, .commit");
+    if (!c) return; const r = c.getBoundingClientRect();
+    c.style.setProperty("--mx", (e.clientX - r.left) + "px"); c.style.setProperty("--my", (e.clientY - r.top) + "px");
+  }, { passive: true });
 
   /* ---------------- reveal ---------------- */
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .1, rootMargin: "0px 0px -40px 0px" });
@@ -251,9 +350,21 @@
   // Mouse: hover only changes the highlight (no re-render), single click runs the item.
   list.addEventListener("mousemove", e => { const li = e.target.closest(".cmdk-item"); if (li && +li.dataset.i !== sel) setSel(+li.dataset.i); });
   list.addEventListener("click", e => { const li = e.target.closest(".cmdk-item"); if (li) exec(filtered[+li.dataset.i]); });
-  const openCmd = () => { cmdk.hidden = false; input.value = ""; filtered = ITEMS; sel = 0; render(); list.scrollTop = 0; input.focus(); document.body.style.overflow = "hidden"; };
-  const closeCmd = () => { cmdk.hidden = true; document.body.style.overflow = ""; };
-  const exec = it => { if (!it) return; closeCmd(); it.run(); };
+  let cmdReturn = null;
+  const openCmd = () => {
+    if (!cmdk.hidden) return;
+    cmdReturn = document.activeElement; cmdk.hidden = false; input.value = ""; filtered = ITEMS; sel = 0; render(); list.scrollTop = 0; lock(true);
+    // on phones don't pop the keyboard immediately: the list is the primary way to navigate
+    if (TOUCH) $(".cmdk-box").focus({ preventScroll: true }); else input.focus();
+  };
+  const closeCmd = (restore = true) => { if (cmdk.hidden) return; cmdk.hidden = true; lock(false); if (restore && cmdReturn && cmdReturn.focus) cmdReturn.focus({ preventScroll: true }); };
+  const exec = it => { if (!it) return; closeCmd(false); it.run(); };
+  $(".cmdk-box").tabIndex = -1;
+  cmdk.addEventListener("keydown", e => trap($(".cmdk-box"), e));
+  // swipe the bottom sheet down to close it (phones)
+  let sy = null;
+  $(".cmdk-box").addEventListener("touchstart", e => { sy = e.target.closest(".cmdk-list") && list.scrollTop > 0 ? null : e.touches[0].clientY; }, { passive: true });
+  $(".cmdk-box").addEventListener("touchend", e => { if (sy !== null && e.changedTouches[0].clientY - sy > 90) closeCmd(); sy = null; }, { passive: true });
   input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase();
     filtered = !q ? ITEMS : ITEMS.filter(it => (it.t + " " + it.g + " " + it.d + " " + it.k).toLowerCase().includes(q) || (q === "shell" && it.shell) || (q === "terminal" && it.shell));
@@ -266,7 +377,7 @@
   });
   cmdk.addEventListener("mousedown", e => { if (e.target === cmdk) closeCmd(); });
   $(".cmdk-x").addEventListener("click", closeCmd);
-  $(".cmd-btn").addEventListener("click", openCmd);
+  $(".cmd-btn").addEventListener("click", () => openCmd());
   window.MS.openCmd = openCmd;
 
   /* ---------------- interactive shell ---------------- */
@@ -324,13 +435,17 @@
     hist.push(line); hi = hist.length;
     (CMDS[c.toLowerCase()] || (() => print(`<span class="e">${esc(c)}: buyruq topilmadi. 'help' yozing.</span>`)))(a);
   };
+  let shellReturn = null;
   function openShell() {
-    shell.hidden = false; document.body.style.overflow = "hidden";
-    if (!out.textContent) { print(`<span class="d">Portfolio OS 2.0 — ${new Date().toDateString()}</span>`); CMDS.neofetch(); print(`\nBoshlash uchun <span class="h">help</span> yozing.\n`); }
-    setTimeout(() => sin.focus(), 50);
+    if (!shell.hidden) return;
+    closeSheet(false); shellReturn = document.activeElement; shell.hidden = false; lock(true);
+    if (!out.textContent) { print(`<span class="d">Portfolio OS 2.0 — ${new Date().toDateString()}</span>`); CMDS.neofetch(); print(`\nBoshlash uchun <span class="h">help</span> yozing${TOUCH ? " yoki pastdagi tugmalarni bosing" : ""}.\n`); }
+    if (!TOUCH) setTimeout(() => sin.focus(), 50);
   }
-  function closeShell() { shell.hidden = true; document.body.style.overflow = ""; }
+  function closeShell() { if (shell.hidden) return; shell.hidden = true; lock(false); if (shellReturn && shellReturn.focus) shellReturn.focus({ preventScroll: true }); }
   window.MS.openShell = openShell;
+  shell.addEventListener("keydown", e => trap($(".shell-box"), e));
+  $(".shell-chips").addEventListener("click", e => { const b = e.target.closest("[data-run]"); if (b) { e.stopPropagation(); run(b.dataset.run); } });
   sin.addEventListener("keydown", e => {
     if (e.key === "Enter") { run(sin.value); sin.value = ""; }
     else if (e.key === "ArrowUp") { e.preventDefault(); if (hi > 0) sin.value = hist[--hi]; }
@@ -339,7 +454,7 @@
     else if (e.key === "l" && e.ctrlKey) { e.preventDefault(); out.innerHTML = ""; }
   });
   shell.addEventListener("mousedown", e => { if (e.target === shell) closeShell(); });
-  $(".shell-box").addEventListener("click", () => sin.focus());
+  $(".shell-out").addEventListener("click", () => { if (!TOUCH && !getSelection().toString()) sin.focus(); });
   $(".shell-x").addEventListener("click", closeShell);
   $$("[data-shell]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); openShell(); }));
   $$("[data-cmdk]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); openCmd(); }));
@@ -347,16 +462,21 @@
   /* ---------------- global keys ---------------- */
   addEventListener("keydown", e => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); cmdk.hidden ? openCmd() : closeCmd(); }
-    if (e.key === "Escape") { if (!cmdk.hidden) closeCmd(); else if (!shell.hidden) closeShell(); more.classList.remove("open"); nav.classList.remove("open"); }
+    if (e.key === "Escape") {
+      if (!cmdk.hidden) closeCmd(); else if (!shell.hidden) closeShell(); else if (!sheet.hidden) closeSheet();
+      if (more.classList.contains("open")) { more.classList.remove("open"); moreBtn.setAttribute("aria-expanded", false); moreBtn.focus(); }
+    }
   });
+  // close the mobile sheet when the viewport grows to desktop size
+  matchMedia("(min-width: 1024px)").addEventListener("change", e => { if (e.matches) closeSheet(false); });
 
   /* ---------------- helpers for pages ---------------- */
   window.MS.tashkentNow = () => new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tashkent" }));
   window.MS.gh = async path => {
-    const key = "gh:" + path, c = sessionStorage.getItem(key);
+    const key = "gh:" + path, c = ss.get(key);
     if (c) return JSON.parse(c);
     const r = await fetch("https://api.github.com/" + path); if (!r.ok) throw new Error(r.status);
-    const j = await r.json(); sessionStorage.setItem(key, JSON.stringify(j)); return j;
+    const j = await r.json(); ss.set(key, JSON.stringify(j)); return j;
   };
   window.MS.ago = d => { const s = (Date.now() - new Date(d)) / 1000; if (s < 3600) return Math.max(1, Math.floor(s / 60)) + " daq oldin"; if (s < 86400) return Math.floor(s / 3600) + " soat oldin"; return Math.floor(s / 86400) + " kun oldin"; };
   // live GitHub widgets (any page)
